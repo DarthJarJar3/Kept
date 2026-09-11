@@ -384,3 +384,42 @@ export function getRecipe(slug: string) {
 export function getFolderCount(folder: string) {
   return recipes.filter((recipe) => recipe.folder === folder).length;
 }
+
+export function filterRecipes({
+  folder,
+  tag,
+  query,
+}: {
+  folder?: string;
+  tag?: string;
+  query?: string;
+}) {
+  const needle = query?.trim().toLowerCase() ?? "";
+  return recipes.filter((recipe) => {
+    const matchesQuery =
+      !needle ||
+      recipe.title.toLowerCase().includes(needle) ||
+      recipe.tags.some((item) => item.includes(needle)) ||
+      recipe.folder.toLowerCase().includes(needle);
+    const matchesFolder = !folder || recipe.folder === folder;
+    const matchesTag = !tag || recipe.tags.includes(tag);
+    return matchesQuery && matchesFolder && matchesTag;
+  });
+}
+
+export function kitchenHref({
+  folder,
+  tag,
+  query,
+}: {
+  folder?: string;
+  tag?: string;
+  query?: string;
+}) {
+  const params = new URLSearchParams();
+  if (folder) params.set("folder", folder);
+  if (tag) params.set("tag", tag);
+  if (query?.trim()) params.set("q", query.trim());
+  const search = params.toString();
+  return search ? `/kitchen?${search}` : "/kitchen";
+}

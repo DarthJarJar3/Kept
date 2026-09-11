@@ -1,35 +1,25 @@
-"use client";
-
-import { type ReactNode, useMemo, useState } from "react";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   allTags,
+  filterRecipes,
   folders,
   getFolderCount,
+  kitchenHref,
   recipes,
   type Recipe,
 } from "@/lib/recipes";
 
-export function KitchenBoard() {
-  const [query, setQuery] = useState("");
-  const [folder, setFolder] = useState<string | null>(null);
-  const [tag, setTag] = useState<string | null>(null);
+type KitchenBoardProps = {
+  folder?: string;
+  tag?: string;
+  query?: string;
+};
 
-  const visible = useMemo(() => {
-    const needle = query.trim().toLowerCase();
-    return recipes.filter((recipe) => {
-      const matchesQuery =
-        !needle ||
-        recipe.title.toLowerCase().includes(needle) ||
-        recipe.tags.some((item) => item.includes(needle)) ||
-        recipe.folder.toLowerCase().includes(needle);
-      const matchesFolder = !folder || recipe.folder === folder;
-      const matchesTag = !tag || recipe.tags.includes(tag);
-      return matchesQuery && matchesFolder && matchesTag;
-    });
-  }, [folder, query, tag]);
+export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
+  const visible = filterRecipes({ folder, tag, query });
 
   return (
     <div className="space-y-8">
@@ -41,16 +31,24 @@ export function KitchenBoard() {
         </p>
       </div>
 
-      <div className="relative max-w-md">
+      <form action="/kitchen" method="get" className="relative max-w-md">
+        {folder ? <input type="hidden" name="folder" value={folder} /> : null}
+        {tag ? <input type="hidden" name="tag" value={tag} /> : null}
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          name="q"
+          defaultValue={query}
           placeholder="Search kept recipes"
           aria-label="Search kept recipes"
-          className="h-11 w-full rounded-lg border border-input bg-card pr-3 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
+          className="h-11 w-full rounded-lg border border-input bg-card pr-20 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
         />
-      </div>
+        <button
+          type="submit"
+          className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
+        >
+          Find
+        </button>
+      </form>
 
       <p className="text-sm text-muted-foreground" aria-live="polite">
         Showing {visible.length} of {recipes.length}
@@ -68,12 +66,14 @@ export function KitchenBoard() {
           {folders.map((item) => (
             <FilterChip
               key={item}
+              href={kitchenHref({
+                folder: folder === item ? undefined : item,
+                tag,
+                query,
+              })}
               label={`${item} (${getFolderCount(item)})`}
               kind="folder"
               active={folder === item}
-              onClick={() =>
-                setFolder((current) => (current === item ? null : item))
-              }
             />
           ))}
         </FilterGroup>
@@ -85,10 +85,14 @@ export function KitchenBoard() {
           {allTags.map((item) => (
             <FilterChip
               key={item}
+              href={kitchenHref({
+                folder,
+                tag: tag === item ? undefined : item,
+                query,
+              })}
               label={item}
               kind="tag"
               active={tag === item}
-              onClick={() => setTag((current) => (current === item ? null : item))}
             />
           ))}
         </FilterGroup>
@@ -100,17 +104,12 @@ export function KitchenBoard() {
           <p className="mt-1 text-sm text-muted-foreground">
             Clear a folder or tag, or try a different name.
           </p>
-          <button
-            type="button"
-            className="mt-4 text-sm font-medium text-primary underline-offset-4 hover:underline"
-            onClick={() => {
-              setQuery("");
-              setFolder(null);
-              setTag(null);
-            }}
+          <Link
+            href="/kitchen"
+            className="mt-4 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
           >
             Show everything
-          </button>
+          </Link>
         </div>
       ) : (
         <ul className="grid gap-4 sm:grid-cols-2" data-recipe-count={visible.length}>
@@ -152,32 +151,31 @@ function FilterGroup({
 }
 
 function FilterChip({
+  href,
   label,
   kind,
   active,
-  onClick,
 }: {
+  href: string;
   label: string;
   kind: "folder" | "tag";
   active: boolean;
-  onClick: () => void;
 }) {
   const shape = kind === "folder" ? "rounded-lg" : "rounded-full";
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
+    <Link
+      href={href}
+      aria-current={active ? "true" : undefined}
       className={
         active
-          ? `${shape} bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground`
+          ? `inline-flex ${shape} bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground`
           : kind === "folder"
-            ? `${shape} bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-accent`
-            : `${shape} border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted`
+            ? `inline-flex ${shape} bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-accent`
+            : `inline-flex ${shape} border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted`
       }
     >
       {label}
-    </button>
+    </Link>
   );
 }
 
