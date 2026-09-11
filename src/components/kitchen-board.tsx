@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -33,11 +33,12 @@ export function KitchenBoard() {
   }, [folder, query, tag]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
         <h1 className="text-3xl sm:text-4xl">My kitchen</h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
-          Find a recipe you already made work — by name, folder, or tag.
+          Find a recipe you already made work — by the folder you would look in,
+          or a tag that lives on more than one shelf.
         </p>
       </div>
 
@@ -52,23 +53,39 @@ export function KitchenBoard() {
         />
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {folders.map((item) => (
-          <FilterChip
-            key={item}
-            label={`${item} (${getFolderCount(item)})`}
-            active={folder === item}
-            onClick={() => setFolder((current) => (current === item ? null : item))}
-          />
-        ))}
-        {allTags.map((item) => (
-          <FilterChip
-            key={item}
-            label={`#${item}`}
-            active={tag === item}
-            onClick={() => setTag((current) => (current === item ? null : item))}
-          />
-        ))}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <FilterGroup
+          title="Folders"
+          hint="One place you would look"
+          legend="Filter by folder"
+        >
+          {folders.map((item) => (
+            <FilterChip
+              key={item}
+              label={`${item} (${getFolderCount(item)})`}
+              kind="folder"
+              active={folder === item}
+              onClick={() =>
+                setFolder((current) => (current === item ? null : item))
+              }
+            />
+          ))}
+        </FilterGroup>
+        <FilterGroup
+          title="Tags"
+          hint="Find the same recipe another way"
+          legend="Filter by tag"
+        >
+          {allTags.map((item) => (
+            <FilterChip
+              key={item}
+              label={item}
+              kind="tag"
+              active={tag === item}
+              onClick={() => setTag((current) => (current === item ? null : item))}
+            />
+          ))}
+        </FilterGroup>
       </div>
 
       {visible.length === 0 ? (
@@ -102,15 +119,44 @@ export function KitchenBoard() {
   );
 }
 
+function FilterGroup({
+  title,
+  hint,
+  legend,
+  children,
+}: {
+  title: string;
+  hint: string;
+  legend: string;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label={legend}
+      className="rounded-2xl border border-border bg-card p-4"
+    >
+      <div className="mb-3">
+        <p className="font-heading text-lg leading-none">{title}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{hint}</p>
+      </div>
+      <div className="flex flex-wrap gap-2">{children}</div>
+    </div>
+  );
+}
+
 function FilterChip({
   label,
+  kind,
   active,
   onClick,
 }: {
   label: string;
+  kind: "folder" | "tag";
   active: boolean;
   onClick: () => void;
 }) {
+  const shape = kind === "folder" ? "rounded-lg" : "rounded-full";
   return (
     <button
       type="button"
@@ -118,8 +164,10 @@ function FilterChip({
       aria-pressed={active}
       className={
         active
-          ? "rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
-          : "rounded-full bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-accent"
+          ? `${shape} bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground`
+          : kind === "folder"
+            ? `${shape} bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-accent`
+            : `${shape} border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted`
       }
     >
       {label}
@@ -146,9 +194,11 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         </div>
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Badge variant="secondary">{recipe.folder}</Badge>
+        <Badge variant="secondary" className="rounded-md">
+          {recipe.folder}
+        </Badge>
         {recipe.tags.map((item) => (
-          <Badge key={item} variant="outline">
+          <Badge key={item} variant="outline" className="rounded-full">
             {item}
           </Badge>
         ))}
