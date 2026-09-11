@@ -28,7 +28,7 @@ export default async function RecipePage({ params }: RecipePageProps) {
           {recipe.folder}
         </p>
 
-        <div className="mt-3 flex items-start gap-3">
+        <div className="mt-4 flex items-start gap-3">
           <div
             aria-hidden
             className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-secondary text-3xl"
@@ -37,48 +37,79 @@ export default async function RecipePage({ params }: RecipePageProps) {
           </div>
           <div>
             <h1 className="text-3xl sm:text-4xl">{recipe.title}</h1>
-            <p className="mt-2 text-muted-foreground">
-              From {recipe.source}. Last cooked {recipe.lastCooked.toLowerCase()}.{" "}
-              {recipe.time} · {recipe.servings}.
+            <p className="mt-2 text-sm text-muted-foreground">
+              {recipe.time} · {recipe.servings} · last cooked{" "}
+              {recipe.lastCooked.toLowerCase()}
             </p>
-            <p className="mt-3 max-w-2xl">{recipe.notes.join(" ")}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Badge variant="secondary" className="rounded-md">
+                {recipe.folder}
+              </Badge>
+              {recipe.tags.map((tag) => (
+                <Badge key={tag} variant="outline" className="rounded-full">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Badge variant="secondary">{recipe.folder}</Badge>
-          {recipe.tags.map((tag) => (
-            <Badge key={tag} variant="outline">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-
-        <section className="mt-10">
-          <h2 className="text-2xl">Ingredients</h2>
-          <ul className="mt-3 space-y-2">
-            {recipe.ingredients.map((item) => (
-              <li key={item.name} className="flex gap-3 border-b border-border/70 py-2 text-sm">
-                <span className="w-40 shrink-0 font-medium sm:w-48">{item.kept}</span>
-                <span>{item.name}</span>
-              </li>
+        <section
+          aria-label="Your version"
+          className="mt-8 rounded-2xl border border-primary/35 bg-[oklch(0.96_0.03_52)] p-5"
+        >
+          <p className="text-sm font-medium tracking-wide text-primary uppercase">
+            Your version
+          </p>
+          <p className="mt-1 font-heading text-xl">{recipe.whyKept}</p>
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-relaxed">
+            {recipe.notes.map((note) => (
+              <li key={note}>{note}</li>
             ))}
           </ul>
+          <p className="mt-4 text-xs text-muted-foreground">
+            Originally from {recipe.source}. The list below is how you make it
+            now.
+          </p>
         </section>
 
-        <section className="mt-10">
-          <h2 className="text-2xl">Steps</h2>
-          <ol className="mt-3 space-y-3">
-            {recipe.steps.map((step, index) => (
-              <li key={step} className="flex gap-3">
-                <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-medium">
-                  {index + 1}
-                </span>
-                <p>{step}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <div className="mt-10 grid gap-10 lg:grid-cols-2">
+          <section>
+            <h2 className="text-2xl">Ingredients</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Changed amounts sit together so you can see what you actually use.
+            </p>
+            <ul className="mt-4 divide-y divide-border">
+              {recipe.ingredients.map((item) => (
+                <li key={item.name} className="py-3">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <span className="font-medium">{item.name}</span>
+                    <span>{item.kept}</span>
+                  </div>
+                  {item.changed ? (
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Blog called for {item.original}
+                    </p>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl">Steps</h2>
+            <ol className="mt-4 space-y-3">
+              {recipe.steps.map((step, index) => (
+                <li key={step} className="flex gap-3">
+                  <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-medium">
+                    {index + 1}
+                  </span>
+                  <p>{step}</p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </div>
       </main>
     </div>
   );

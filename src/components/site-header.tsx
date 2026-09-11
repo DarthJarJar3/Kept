@@ -15,19 +15,14 @@ export function SiteHeader({ current = "home" }: SiteHeaderProps) {
         >
           Kept
         </Link>
-        {current !== "home" ? (
+        {current === "home" ? (
+          <span className="text-sm text-muted-foreground">Your recipes</span>
+        ) : (
           <Link
             href="/"
             className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           >
             Back to home
-          </Link>
-        ) : (
-          <Link
-            href="/kitchen"
-            className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-          >
-            My kitchen
           </Link>
         )}
       </div>
