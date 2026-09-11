@@ -4,7 +4,6 @@ import { type ReactNode, useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   allTags,
   folders,
@@ -44,14 +43,21 @@ export function KitchenBoard() {
 
       <div className="relative max-w-md">
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
+        <input
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search kept recipes"
-          className="h-11 bg-card pl-9"
           aria-label="Search kept recipes"
+          className="h-11 w-full rounded-lg border border-input bg-card pr-3 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
         />
       </div>
+
+      <p className="text-sm text-muted-foreground" aria-live="polite">
+        Showing {visible.length} of {recipes.length}
+        {folder ? ` in ${folder}` : ""}
+        {tag ? ` tagged ${tag}` : ""}
+        {query.trim() ? ` matching “${query.trim()}”` : ""}
+      </p>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <FilterGroup
@@ -107,7 +113,7 @@ export function KitchenBoard() {
           </button>
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2">
+        <ul className="grid gap-4 sm:grid-cols-2" data-recipe-count={visible.length}>
           {visible.map((recipe) => (
             <li key={recipe.slug}>
               <RecipeCard recipe={recipe} />
