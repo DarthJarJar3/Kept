@@ -389,13 +389,15 @@ export function filterRecipes({
   folder,
   tag,
   query,
+  list = recipes,
 }: {
   folder?: string;
   tag?: string;
   query?: string;
+  list?: Recipe[];
 }) {
   const needle = query?.trim().toLowerCase() ?? "";
-  return recipes.filter((recipe) => {
+  return list.filter((recipe) => {
     const matchesQuery =
       !needle ||
       recipe.title.toLowerCase().includes(needle) ||

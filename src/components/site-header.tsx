@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 type SiteHeaderProps = {
-  current?: "home" | "kitchen" | "recipe";
+  current?: "home" | "kitchen" | "recipe" | "keep";
 };
 
 export function SiteHeader({ current = "home" }: SiteHeaderProps) {

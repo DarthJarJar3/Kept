@@ -1,16 +1,20 @@
-import Link from "next/link";
+"use client";
+
 import type { ReactNode } from "react";
-import { Search } from "lucide-react";
+import Link from "next/link";
+import { Plus, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
+import { useKeptRecipes } from "@/lib/use-kept-recipes";
 import {
-  allTags,
+  allTags as seedTags,
   filterRecipes,
   folders,
-  getFolderCount,
   kitchenHref,
-  recipes,
+  recipes as seedRecipes,
   type Recipe,
 } from "@/lib/recipes";
+import { cn } from "@/lib/utils";
 
 type KitchenBoardProps = {
   folder?: string;
@@ -19,16 +23,34 @@ type KitchenBoardProps = {
 };
 
 export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
-  const visible = filterRecipes({ folder, tag, query });
+  const kept = useKeptRecipes();
+  const recipes = [...kept, ...seedRecipes];
+  const tags = Array.from(
+    new Set([...seedTags, ...kept.flatMap((recipe) => recipe.tags)])
+  ).sort();
+  const visible = filterRecipes({ folder, tag, query, list: recipes });
+
+  function folderCount(name: string) {
+    return recipes.filter((recipe) => recipe.folder === name).length;
+  }
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl sm:text-4xl">My kitchen</h1>
-        <p className="mt-2 max-w-xl text-muted-foreground">
-          Find a recipe you already made work — by the folder you would look in,
-          or a tag that lives on more than one shelf.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-3xl sm:text-4xl">My kitchen</h1>
+          <p className="mt-2 max-w-xl text-muted-foreground">
+            Find a recipe you already made work — by the folder you would look
+            in, or a tag that lives on more than one shelf.
+          </p>
+        </div>
+        <Link
+          href="/keep"
+          className={cn(buttonVariants({ size: "lg" }), "h-11 shrink-0 px-4")}
+        >
+          <Plus className="size-4" />
+          Keep a recipe
+        </Link>
       </div>
 
       <form action="/kitchen" method="get" className="relative max-w-md">
@@ -71,7 +93,7 @@ export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
                 tag,
                 query,
               })}
-              label={`${item} (${getFolderCount(item)})`}
+              label={`${item} (${folderCount(item)})`}
               kind="folder"
               active={folder === item}
             />
@@ -82,7 +104,7 @@ export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
           hint="Find the same recipe another way"
           legend="Filter by tag"
         >
-          {allTags.map((item) => (
+          {tags.map((item) => (
             <FilterChip
               key={item}
               href={kitchenHref({
@@ -112,7 +134,10 @@ export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
           </Link>
         </div>
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2" data-recipe-count={visible.length}>
+        <ul
+          className="grid gap-4 sm:grid-cols-2"
+          data-recipe-count={visible.length}
+        >
           {visible.map((recipe) => (
             <li key={recipe.slug}>
               <RecipeCard recipe={recipe} />
