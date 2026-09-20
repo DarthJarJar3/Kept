@@ -2,21 +2,33 @@
 
 import { type ReactNode, useMemo, useState } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { buttonVariants } from "@/components/ui/button";
+import { useKeptRecipes } from "@/lib/use-kept-recipes";
 import {
-  allTags,
+  allTags as seedTags,
   folders,
-  getFolderCount,
-  recipes,
+  recipes as seedRecipes,
   type Recipe,
 } from "@/lib/recipes";
+import { cn } from "@/lib/utils";
 
 export function KitchenBoard() {
   const [query, setQuery] = useState("");
   const [folder, setFolder] = useState<string | null>(null);
   const [tag, setTag] = useState<string | null>(null);
+  const kept = useKeptRecipes();
+
+  const recipes = useMemo(() => [...kept, ...seedRecipes], [kept]);
+  const tags = useMemo(
+    () =>
+      Array.from(
+        new Set([...seedTags, ...kept.flatMap((recipe) => recipe.tags)])
+      ).sort(),
+    [kept]
+  );
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -30,16 +42,29 @@ export function KitchenBoard() {
       const matchesTag = !tag || recipe.tags.includes(tag);
       return matchesQuery && matchesFolder && matchesTag;
     });
-  }, [folder, query, tag]);
+  }, [folder, query, recipes, tag]);
+
+  function folderCount(name: string) {
+    return recipes.filter((recipe) => recipe.folder === name).length;
+  }
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl sm:text-4xl">My kitchen</h1>
-        <p className="mt-2 max-w-xl text-muted-foreground">
-          Find a recipe you already made work — by the folder you would look in,
-          or a tag that lives on more than one shelf.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-3xl sm:text-4xl">My kitchen</h1>
+          <p className="mt-2 max-w-xl text-muted-foreground">
+            Find a recipe you already made work — by the folder you would look
+            in, or a tag that lives on more than one shelf.
+          </p>
+        </div>
+        <Link
+          href="/keep"
+          className={cn(buttonVariants({ size: "lg" }), "h-11 shrink-0 px-4")}
+        >
+          <Plus className="size-4" />
+          Keep a recipe
+        </Link>
       </div>
 
       <div className="relative max-w-md">
@@ -62,7 +87,7 @@ export function KitchenBoard() {
           {folders.map((item) => (
             <FilterChip
               key={item}
-              label={`${item} (${getFolderCount(item)})`}
+              label={`${item} (${folderCount(item)})`}
               kind="folder"
               active={folder === item}
               onClick={() =>
@@ -76,7 +101,7 @@ export function KitchenBoard() {
           hint="Find the same recipe another way"
           legend="Filter by tag"
         >
-          {allTags.map((item) => (
+          {tags.map((item) => (
             <FilterChip
               key={item}
               label={item}
