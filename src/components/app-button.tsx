@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const box =
-  "inline-flex items-center justify-center gap-1.5 rounded-xl border-2 min-h-11 px-4 py-2 text-sm font-medium transition-colors select-none";
+  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border-2 min-h-11 px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors select-none";
 
 const variants = {
   primary:

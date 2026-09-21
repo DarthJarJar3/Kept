@@ -234,7 +234,12 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
             className={fieldClass}
             aria-label="Recipe URL"
           />
-          <AppButton type="button" variant="secondary" onClick={fillFromUrl}>
+          <AppButton
+            type="button"
+            variant="secondary"
+            className="shrink-0"
+            onClick={fillFromUrl}
+          >
             Fill sample
           </AppButton>
         </div>
