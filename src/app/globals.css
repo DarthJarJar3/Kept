@@ -90,6 +90,7 @@
   html {
     @apply font-sans;
     color-scheme: light;
+    font-size: clamp(15px, 0.45vw + 14px, 18px);
   }
   body {
     @apply bg-background text-foreground;
@@ -99,4 +100,59 @@
   h3 {
     font-family: var(--font-heading), ui-serif, Georgia, serif;
   }
+}
+
+.page-shell {
+  width: min(100%, 88rem);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 4.5vw, 2.75rem);
+}
+
+.page-shell-wide {
+  width: min(100%, 96rem);
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 640px) {
+  .site-nav {
+    flex-wrap: wrap;
+    overflow: visible;
+    padding-bottom: 0;
+  }
+}
+
+html[data-theme="sage"] {
+  --background: oklch(0.975 0.012 140);
+  --foreground: oklch(0.28 0.04 145);
+  --primary: oklch(0.55 0.08 150);
+  --primary-foreground: oklch(0.99 0.01 140);
+  --secondary: oklch(0.93 0.03 145);
+  --secondary-foreground: oklch(0.3 0.04 145);
+  --accent: oklch(0.91 0.04 145);
+  --muted: oklch(0.95 0.02 145);
+  --muted-foreground: oklch(0.48 0.03 145);
+  --border: oklch(0.86 0.03 145);
+  --ring: oklch(0.55 0.08 150);
+}
+
+html[data-theme="berry"] {
+  --background: oklch(0.975 0.015 350);
+  --foreground: oklch(0.3 0.05 8);
+  --primary: oklch(0.58 0.14 8);
+  --primary-foreground: oklch(0.99 0.01 8);
+  --secondary: oklch(0.94 0.03 8);
+  --secondary-foreground: oklch(0.32 0.05 8);
+  --accent: oklch(0.91 0.04 8);
+  --muted: oklch(0.95 0.02 8);
+  --muted-foreground: oklch(0.5 0.04 8);
+  --border: oklch(0.88 0.04 8);
+  --ring: oklch(0.58 0.14 8);
 }

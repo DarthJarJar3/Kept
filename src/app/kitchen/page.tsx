@@ -1,8 +1,14 @@
 import { SiteHeader } from "@/components/site-header";
 import { KitchenBoard } from "@/components/kitchen-board";
+import { PageShell } from "@/components/page-shell";
 
 type KitchenPageProps = {
-  searchParams: Promise<{ folder?: string; tag?: string; q?: string }>;
+  searchParams: Promise<{
+    folder?: string;
+    tag?: string;
+    q?: string;
+    favorite?: string;
+  }>;
 };
 
 export default async function KitchenPage({ searchParams }: KitchenPageProps) {
@@ -11,13 +17,14 @@ export default async function KitchenPage({ searchParams }: KitchenPageProps) {
   return (
     <div className="flex min-h-full flex-col">
       <SiteHeader current="kitchen" />
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
+      <PageShell wide>
         <KitchenBoard
           folder={params.folder}
           tag={params.tag}
           query={params.q}
+          favorite={params.favorite === "1"}
         />
-      </main>
+      </PageShell>
     </div>
   );
 }

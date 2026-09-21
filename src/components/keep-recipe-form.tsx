@@ -1,20 +1,46 @@
 "use client";
 
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2 } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { allTags, folders, type Recipe } from "@/lib/recipes";
+import { Heart, ImagePlus, Plus, Trash2 } from "lucide-react";
+import { AppButton } from "@/components/app-button";
+import { recipeFromPastedUrl } from "@/lib/demo-from-url";
 import { saveKeptRecipe, slugifyTitle } from "@/lib/kept-store";
-import { cn } from "@/lib/utils";
+import { readMealPhoto } from "@/lib/photo";
+import { allTags, folders, type Recipe } from "@/lib/recipes";
 
-const emojis = ["🍪", "🍋", "🍞", "🍖", "🍌", "🌿", "🍲", "🥗", "🥧", "☕"];
+const emojis = [
+  "🍪",
+  "🍋",
+  "🍞",
+  "🍖",
+  "🍌",
+  "🌿",
+  "🍲",
+  "🥗",
+  "🥧",
+  "☕",
+  "🍝",
+  "🌮",
+  "🥞",
+  "🍕",
+  "🐟",
+  "🥑",
+  "🧀",
+  "🥕",
+  "🍜",
+  "🧁",
+  "🥘",
+  "🍗",
+  "🍩",
+  "🍳",
+];
 
 const fieldClass =
-  "h-11 w-full rounded-lg border border-input bg-card px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm";
+  "h-11 w-full rounded-xl border-2 border-border bg-card px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring md:text-sm";
 
 const areaClass =
-  "min-h-28 w-full rounded-lg border border-input bg-card px-3 py-2 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm";
+  "min-h-28 w-full rounded-xl border-2 border-border bg-card px-3 py-2 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring md:text-sm";
 
 type IngredientDraft = {
   name: string;
@@ -22,23 +48,66 @@ type IngredientDraft = {
   original: string;
 };
 
-export function KeepRecipeForm() {
+function draftsFrom(recipe?: Recipe): IngredientDraft[] {
+  if (!recipe || recipe.ingredients.length === 0) {
+    return [
+      { name: "", kept: "", original: "" },
+      { name: "", kept: "", original: "" },
+    ];
+  }
+  return recipe.ingredients.map((item) => ({
+    name: item.name,
+    kept: item.kept,
+    original: item.original,
+  }));
+}
+
+export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [emoji, setEmoji] = useState("🍪");
-  const [folder, setFolder] = useState<(typeof folders)[number]>("Weeknight");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const photoInputId = useId();
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const editing = Boolean(initial);
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [emoji, setEmoji] = useState(initial?.emoji ?? "🍪");
+  const [photo, setPhoto] = useState(initial?.photo ?? "");
+  const [photoError, setPhotoError] = useState("");
+  const [folder, setFolder] = useState<(typeof folders)[number]>(
+    (initial?.folder as (typeof folders)[number]) ?? "Weeknight"
+  );
+  const [selectedTags, setSelectedTags] = useState<string[]>(initial?.tags ?? []);
   const [customTag, setCustomTag] = useState("");
-  const [time, setTime] = useState("");
-  const [servings, setServings] = useState("");
-  const [source, setSource] = useState("");
-  const [whyKept, setWhyKept] = useState("");
-  const [notes, setNotes] = useState("");
-  const [ingredients, setIngredients] = useState<IngredientDraft[]>([
-    { name: "", kept: "", original: "" },
-    { name: "", kept: "", original: "" },
-  ]);
-  const [steps, setSteps] = useState("");
+  const [favorite, setFavorite] = useState(Boolean(initial?.favorite));
+  const [time, setTime] = useState(initial?.time ?? "");
+  const [servings, setServings] = useState(initial?.servings ?? "");
+  const [source, setSource] = useState(initial?.source ?? "");
+  const [pasteUrl, setPasteUrl] = useState("");
+  const [urlNotice, setUrlNotice] = useState("");
+  const [whyKept, setWhyKept] = useState(initial?.whyKept ?? "");
+  const [notes, setNotes] = useState(initial?.notes.join("\n") ?? "");
+  const [ingredients, setIngredients] = useState<IngredientDraft[]>(
+    draftsFrom(initial)
+  );
+  const [steps, setSteps] = useState(initial?.steps.join("\n") ?? "");
+
+  function applyRecipe(recipe: Recipe, keepSource?: string) {
+    setTitle(recipe.title);
+    setEmoji(recipe.emoji);
+    setPhoto(recipe.photo ?? "");
+    setFolder(
+      folders.includes(recipe.folder as (typeof folders)[number])
+        ? (recipe.folder as (typeof folders)[number])
+        : "Weeknight"
+    );
+    setSelectedTags(recipe.tags);
+    setFavorite(Boolean(recipe.favorite));
+    setTime(recipe.time);
+    setServings(recipe.servings);
+    setSource(keepSource ?? recipe.source);
+    setWhyKept(recipe.whyKept);
+    setNotes(recipe.notes.join("\n"));
+    setIngredients(draftsFrom(recipe));
+    setSteps(recipe.steps.join("\n"));
+  }
 
   function toggleTag(tag: string) {
     setSelectedTags((current) =>
@@ -71,6 +140,27 @@ export function KeepRecipeForm() {
     );
   }
 
+  async function handlePhoto(file?: File) {
+    setPhotoError("");
+    if (!file) {
+      return;
+    }
+    try {
+      const dataUrl = await readMealPhoto(file);
+      setPhoto(dataUrl);
+    } catch {
+      setPhotoError("That photo could not be added. Try another image.");
+    }
+  }
+
+  function fillFromUrl() {
+    const recipe = recipeFromPastedUrl(pasteUrl);
+    applyRecipe(recipe, pasteUrl.trim() || recipe.source);
+    setUrlNotice(
+      "This prototype does not scrape the web. It filled a sample recipe so you can see the keep flow."
+    );
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const trimmedTitle = title.trim() || "Untitled kept recipe";
@@ -92,13 +182,13 @@ export function KeepRecipeForm() {
       }));
 
     const recipe: Recipe = {
-      slug: slugifyTitle(trimmedTitle),
+      slug: initial?.slug ?? slugifyTitle(trimmedTitle),
       title: trimmedTitle,
       emoji,
       folder,
       tags: selectedTags,
       source: source.trim() || "A blog I do not want to hunt for again",
-      lastCooked: "Today",
+      lastCooked: initial?.lastCooked ?? "Today",
       time: time.trim() || "Weeknight",
       servings: servings.trim() || "4",
       whyKept:
@@ -119,6 +209,9 @@ export function KeepRecipeForm() {
         stepLines.length > 0
           ? stepLines
           : ["Cook it the way you already know works."],
+      favorite,
+      photo: photo || undefined,
+      cookLog: initial?.cookLog,
     };
 
     saveKeptRecipe(recipe);
@@ -127,98 +220,183 @@ export function KeepRecipeForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <div className="grid gap-4 sm:grid-cols-[auto_1fr]">
+      <section className="rounded-2xl border-2 border-border bg-card p-4 sm:p-5">
+        <h2 className="font-heading text-xl">Paste a recipe URL</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Visual prototype only — paste any link and we fill a sample so you can
+          edit the amounts you actually use.
+        </p>
+        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+          <input
+            value={pasteUrl}
+            onChange={(event) => setPasteUrl(event.target.value)}
+            placeholder="https://…"
+            className={fieldClass}
+            aria-label="Recipe URL"
+          />
+          <AppButton type="button" variant="secondary" onClick={fillFromUrl}>
+            Fill sample
+          </AppButton>
+        </div>
+        {urlNotice ? (
+          <p className="mt-2 text-sm text-muted-foreground">{urlNotice}</p>
+        ) : null}
+      </section>
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <fieldset>
           <legend className="mb-2 text-sm font-medium">Icon</legend>
           <div className="flex flex-wrap gap-2">
             {emojis.map((item) => (
-              <button
+              <AppButton
                 key={item}
                 type="button"
                 onClick={() => setEmoji(item)}
                 aria-pressed={emoji === item}
-                className={
-                  emoji === item
-                    ? "flex size-11 items-center justify-center rounded-lg bg-primary text-xl text-primary-foreground"
-                    : "flex size-11 items-center justify-center rounded-lg bg-secondary text-xl"
-                }
+                variant={emoji === item ? "primary" : "secondary"}
+                className="min-h-11 w-11 px-0 text-xl"
               >
                 {item}
-              </button>
+              </AppButton>
             ))}
           </div>
         </fieldset>
-        <label className="block">
-          <span className="mb-2 block text-sm font-medium">Recipe name</span>
-          <input
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="Brown butter chocolate chip cookies"
-            className={fieldClass}
-          />
-        </label>
+        <div className="space-y-4">
+          <label className="block">
+            <span className="mb-2 block text-sm font-medium">Recipe name</span>
+            <input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="Brown butter chocolate chip cookies"
+              className={fieldClass}
+            />
+          </label>
+          <AppButton
+            type="button"
+            variant={favorite ? "primary" : "secondary"}
+            onClick={() => setFavorite((current) => !current)}
+            aria-pressed={favorite}
+          >
+            <Heart className={favorite ? "size-4 fill-current" : "size-4"} />
+            {favorite ? "Favorited" : "Add to Favorites"}
+          </AppButton>
+        </div>
       </div>
 
+      <section className="rounded-2xl border-2 border-border bg-card p-4 sm:p-5">
+        <h2 className="font-heading text-xl">Picture of the meal</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Optional. Shows on the kitchen card and at the top of the recipe.
+        </p>
+        {photo ? (
+          <div className="mt-4 overflow-hidden rounded-2xl border-2 border-border">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photo}
+              alt="Meal preview"
+              className="h-48 w-full object-cover sm:h-64"
+            />
+          </div>
+        ) : (
+          <label
+            htmlFor={photoInputId}
+            className="mt-4 flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-muted/40 px-4 text-center"
+          >
+            <ImagePlus className="size-6 text-muted-foreground" />
+            <span className="text-sm font-medium">Tap to add a photo</span>
+            <span className="text-sm text-muted-foreground">
+              Phone camera or a picture from your library
+            </span>
+          </label>
+        )}
+        <input
+          id={photoInputId}
+          ref={photoInputRef}
+          type="file"
+          accept="image/*"
+          className="sr-only"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            void handlePhoto(file);
+            event.target.value = "";
+          }}
+        />
+        <div className="mt-3 flex flex-wrap gap-2">
+          <AppButton
+            type="button"
+            variant="secondary"
+            onClick={() => photoInputRef.current?.click()}
+          >
+            <ImagePlus className="size-4" />
+            {photo ? "Change picture" : "Choose picture"}
+          </AppButton>
+          {photo ? (
+            <AppButton
+              type="button"
+              variant="secondary"
+              onClick={() => setPhoto("")}
+            >
+              Remove picture
+            </AppButton>
+          ) : null}
+        </div>
+        {photoError ? (
+          <p className="mt-2 text-sm text-destructive">{photoError}</p>
+        ) : null}
+      </section>
+
       <div className="grid gap-4 lg:grid-cols-2">
-        <fieldset className="rounded-2xl border border-border bg-card p-4">
+        <fieldset className="rounded-2xl border-2 border-border bg-card p-4">
           <legend className="font-heading text-lg">Folder</legend>
           <p className="mb-3 text-sm text-muted-foreground">
             One place you would look
           </p>
           <div className="flex flex-wrap gap-2">
             {folders.map((item) => (
-              <button
+              <AppButton
                 key={item}
                 type="button"
                 onClick={() => setFolder(item)}
                 aria-pressed={folder === item}
-                className={
-                  folder === item
-                    ? "rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
-                    : "rounded-lg bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-accent"
-                }
+                variant={folder === item ? "primary" : "peach"}
               >
                 {item}
-              </button>
+              </AppButton>
             ))}
           </div>
         </fieldset>
 
-        <fieldset className="rounded-2xl border border-border bg-card p-4">
+        <fieldset className="rounded-2xl border-2 border-border bg-card p-4">
           <legend className="font-heading text-lg">Tags</legend>
           <p className="mb-3 text-sm text-muted-foreground">
             Find this recipe another way
           </p>
           <div className="flex flex-wrap gap-2">
             {allTags.map((item) => (
-              <button
+              <AppButton
                 key={item}
                 type="button"
                 onClick={() => toggleTag(item)}
                 aria-pressed={selectedTags.includes(item)}
-                className={
-                  selectedTags.includes(item)
-                    ? "rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
-                    : "rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium hover:bg-muted"
-                }
+                variant={selectedTags.includes(item) ? "primary" : "secondary"}
               >
                 {item}
-              </button>
+              </AppButton>
             ))}
             {selectedTags
               .filter((item) => !allTags.includes(item))
               .map((item) => (
-                <button
+                <AppButton
                   key={item}
                   type="button"
                   onClick={() => toggleTag(item)}
-                  className="rounded-full bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
+                  variant="primary"
                 >
                   {item}
-                </button>
+                </AppButton>
               ))}
           </div>
-          <div className="mt-3 flex gap-2">
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
             <input
               value={customTag}
               onChange={(event) => setCustomTag(event.target.value)}
@@ -229,15 +407,11 @@ export function KeepRecipeForm() {
                 }
               }}
               placeholder="Add a tag"
-              className={cn(fieldClass, "h-9")}
+              className={fieldClass}
             />
-            <button
-              type="button"
-              onClick={addCustomTag}
-              className={cn(buttonVariants({ variant: "outline" }), "h-9")}
-            >
-              Add
-            </button>
+            <AppButton type="button" variant="secondary" onClick={addCustomTag}>
+              Add tag
+            </AppButton>
           </div>
         </fieldset>
       </div>
@@ -261,7 +435,7 @@ export function KeepRecipeForm() {
             className={fieldClass}
           />
         </label>
-        <label className="block sm:col-span-1">
+        <label className="block">
           <span className="mb-2 block text-sm font-medium">Where it came from</span>
           <input
             value={source}
@@ -272,11 +446,8 @@ export function KeepRecipeForm() {
         </label>
       </div>
 
-      <section className="rounded-2xl border border-primary/35 bg-[oklch(0.96_0.03_52)] p-5">
-        <p className="text-sm font-medium tracking-wide text-primary uppercase">
-          Your version
-        </p>
-        <label className="mt-3 block">
+      <section className="rounded-2xl border-2 border-primary/35 bg-secondary/60 p-5">
+        <label className="block">
           <span className="mb-2 block text-sm font-medium">
             Why this is the one you keep
           </span>
@@ -301,33 +472,35 @@ export function KeepRecipeForm() {
       </section>
 
       <section>
-        <div className="flex items-end justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl">Ingredients</h2>
+            <h2 className="text-[clamp(1.35rem,2vw+0.8rem,1.75rem)]">
+              Ingredients
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Your amount is the one you cook from. Fill in the blog amount only
+              What amount is the one you cook from. Fill in the blog amount only
               if you changed it.
             </p>
           </div>
-          <button
+          <AppButton
             type="button"
+            variant="secondary"
             onClick={() =>
               setIngredients((current) => [
                 ...current,
                 { name: "", kept: "", original: "" },
               ])
             }
-            className={cn(buttonVariants({ variant: "outline" }), "shrink-0")}
           >
             <Plus className="size-4" />
-            Add
-          </button>
+            Add ingredient
+          </AppButton>
         </div>
         <ul className="mt-4 space-y-3">
           {ingredients.map((item, index) => (
             <li
               key={index}
-              className="grid gap-2 rounded-xl border border-border bg-card p-3 sm:grid-cols-[1fr_1fr_1fr_auto]"
+              className="grid gap-2 rounded-2xl border-2 border-border bg-card p-3 sm:grid-cols-[1fr_1fr_1fr_auto]"
             >
               <input
                 value={item.name}
@@ -336,16 +509,16 @@ export function KeepRecipeForm() {
                 }
                 placeholder="Ingredient"
                 aria-label={`Ingredient ${index + 1} name`}
-                className={cn(fieldClass, "h-10")}
+                className={fieldClass}
               />
               <input
                 value={item.kept}
                 onChange={(event) =>
                   updateIngredient(index, "kept", event.target.value)
                 }
-                placeholder="How you use it"
+                placeholder="What amount"
                 aria-label={`Ingredient ${index + 1} kept amount`}
-                className={cn(fieldClass, "h-10")}
+                className={fieldClass}
               />
               <input
                 value={item.original}
@@ -354,10 +527,11 @@ export function KeepRecipeForm() {
                 }
                 placeholder="Blog called for…"
                 aria-label={`Ingredient ${index + 1} original amount`}
-                className={cn(fieldClass, "h-10")}
+                className={fieldClass}
               />
-              <button
+              <AppButton
                 type="button"
+                variant="secondary"
                 onClick={() =>
                   setIngredients((current) =>
                     current.length === 1
@@ -365,18 +539,20 @@ export function KeepRecipeForm() {
                       : current.filter((_, itemIndex) => itemIndex !== index)
                   )
                 }
-                className="flex h-10 w-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="w-11 px-0"
                 aria-label={`Remove ingredient ${index + 1}`}
               >
                 <Trash2 className="size-4" />
-              </button>
+              </AppButton>
             </li>
           ))}
         </ul>
       </section>
 
       <label className="block">
-        <span className="mb-2 block font-heading text-2xl">Steps</span>
+        <span className="mb-2 block font-heading text-[clamp(1.35rem,2vw+0.8rem,1.75rem)]">
+          Steps
+        </span>
         <p className="mb-3 text-sm text-muted-foreground">One step per line.</p>
         <textarea
           value={steps}
@@ -384,16 +560,13 @@ export function KeepRecipeForm() {
           placeholder={
             "Brown the butter until it smells nutty.\nChill overnight.\nBake 10–12 minutes."
           }
-          className={cn(areaClass, "min-h-40")}
+          className={`${areaClass} min-h-40`}
         />
       </label>
 
-      <button
-        type="submit"
-        className={cn(buttonVariants({ size: "lg" }), "h-12 px-6 text-base")}
-      >
-        Keep this recipe
-      </button>
+      <AppButton type="submit" className="min-h-12 px-6 text-base">
+        {editing ? "Save this recipe" : "Keep this recipe"}
+      </AppButton>
     </form>
   );
 }

@@ -4,21 +4,17 @@ import { useSyncExternalStore } from "react";
 import {
   findKeptRecipe,
   readKeptRecipes,
+  subscribeKept,
 } from "@/lib/kept-store";
 import type { Recipe } from "@/lib/recipes";
 
-function subscribe(onStoreChange: () => void) {
-  window.addEventListener("storage", onStoreChange);
-  return () => window.removeEventListener("storage", onStoreChange);
-}
-
 export function useKeptRecipes(): Recipe[] {
-  return useSyncExternalStore(subscribe, readKeptRecipes, () => []);
+  return useSyncExternalStore(subscribeKept, readKeptRecipes, () => []);
 }
 
 export function useKeptRecipe(slug: string): Recipe | undefined {
   return useSyncExternalStore(
-    subscribe,
+    subscribeKept,
     () => findKeptRecipe(slug),
     () => undefined
   );

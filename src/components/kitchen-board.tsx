@@ -2,33 +2,44 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Heart, Plus, Search } from "lucide-react";
+import { AppButton } from "@/components/app-button";
 import { useKeptRecipes } from "@/lib/use-kept-recipes";
 import {
   allTags as seedTags,
   filterRecipes,
   folders,
   kitchenHref,
+  mergeRecipeLists,
   recipes as seedRecipes,
   type Recipe,
 } from "@/lib/recipes";
-import { cn } from "@/lib/utils";
 
 type KitchenBoardProps = {
   folder?: string;
   tag?: string;
   query?: string;
+  favorite?: boolean;
 };
 
-export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
+export function KitchenBoard({
+  folder,
+  tag,
+  query = "",
+  favorite = false,
+}: KitchenBoardProps) {
   const kept = useKeptRecipes();
-  const recipes = [...kept, ...seedRecipes];
+  const recipes = mergeRecipeLists(kept, seedRecipes);
   const tags = Array.from(
-    new Set([...seedTags, ...kept.flatMap((recipe) => recipe.tags)])
+    new Set([...seedTags, ...kept.flatMap((recipe) => recipe.tags), "favorites"])
   ).sort();
-  const visible = filterRecipes({ folder, tag, query, list: recipes });
+  const visible = filterRecipes({
+    folder,
+    tag: tag === "favorites" ? undefined : tag,
+    query,
+    favorite: favorite || tag === "favorites",
+    list: recipes,
+  });
 
   function folderCount(name: string) {
     return recipes.filter((recipe) => recipe.folder === name).length;
@@ -36,46 +47,42 @@ export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl sm:text-4xl">My kitchen</h1>
+          <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">My Kitchen</h1>
           <p className="mt-2 max-w-xl text-muted-foreground">
-            Find a recipe you already made work — by the folder you would look
-            in, or a tag that lives on more than one shelf.
+            Find a recipe you already made work — by folder, tag, favorite, name,
+            or an ingredient.
           </p>
         </div>
-        <Link
-          href="/keep"
-          className={cn(buttonVariants({ size: "lg" }), "h-11 shrink-0 px-4")}
-        >
+        <AppButton href="/keep" className="w-full sm:w-auto">
           <Plus className="size-4" />
           Keep a recipe
-        </Link>
+        </AppButton>
       </div>
 
-      <form action="/kitchen" method="get" className="relative max-w-md">
+      <form action="/kitchen" method="get" className="relative max-w-xl">
         {folder ? <input type="hidden" name="folder" value={folder} /> : null}
         {tag ? <input type="hidden" name="tag" value={tag} /> : null}
+        {favorite ? <input type="hidden" name="favorite" value="1" /> : null}
         <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           name="q"
           defaultValue={query}
-          placeholder="Search kept recipes"
+          placeholder="Search names, tags, or ingredients"
           aria-label="Search kept recipes"
-          className="h-11 w-full rounded-lg border border-input bg-card pr-20 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm"
+          className="h-12 w-full rounded-xl border-2 border-border bg-card pr-24 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring"
         />
-        <button
-          type="submit"
-          className="absolute top-1/2 right-1.5 -translate-y-1/2 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground"
-        >
+        <AppButton type="submit" className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3">
           Find
-        </button>
+        </AppButton>
       </form>
 
       <p className="text-sm text-muted-foreground" aria-live="polite">
         Showing {visible.length} of {recipes.length}
         {folder ? ` in ${folder}` : ""}
         {tag ? ` tagged ${tag}` : ""}
+        {favorite ? " in Favorites" : ""}
         {query.trim() ? ` matching “${query.trim()}”` : ""}
       </p>
 
@@ -92,6 +99,7 @@ export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
                 folder: folder === item ? undefined : item,
                 tag,
                 query,
+                favorite,
               })}
               label={`${item} (${folderCount(item)})`}
               kind="folder"
@@ -104,19 +112,33 @@ export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
           hint="Find the same recipe another way"
           legend="Filter by tag"
         >
-          {tags.map((item) => (
-            <FilterChip
-              key={item}
-              href={kitchenHref({
-                folder,
-                tag: tag === item ? undefined : item,
-                query,
-              })}
-              label={item}
-              kind="tag"
-              active={tag === item}
-            />
-          ))}
+          <FilterChip
+            href={kitchenHref({
+              folder,
+              tag,
+              query,
+              favorite: !favorite,
+            })}
+            label={`Favorites (${recipes.filter((recipe) => recipe.favorite).length})`}
+            kind="tag"
+            active={favorite}
+          />
+          {tags
+            .filter((item) => item !== "favorites")
+            .map((item) => (
+              <FilterChip
+                key={item}
+                href={kitchenHref({
+                  folder,
+                  tag: tag === item ? undefined : item,
+                  query,
+                  favorite,
+                })}
+                label={item}
+                kind="tag"
+                active={tag === item}
+              />
+            ))}
         </FilterGroup>
       </div>
 
@@ -124,20 +146,14 @@ export function KitchenBoard({ folder, tag, query = "" }: KitchenBoardProps) {
         <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
           <p className="font-medium">No kept recipes match that.</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Clear a folder or tag, or try a different name.
+            Clear a folder or tag, or try a different name or ingredient.
           </p>
-          <Link
-            href="/kitchen"
-            className="mt-4 inline-block text-sm font-medium text-primary underline-offset-4 hover:underline"
-          >
+          <AppButton href="/kitchen" variant="secondary" className="mt-4">
             Show everything
-          </Link>
+          </AppButton>
         </div>
       ) : (
-        <ul
-          className="grid gap-4 sm:grid-cols-2"
-          data-recipe-count={visible.length}
-        >
+        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {visible.map((recipe) => (
             <li key={recipe.slug}>
               <RecipeCard recipe={recipe} />
@@ -186,21 +202,14 @@ function FilterChip({
   kind: "folder" | "tag";
   active: boolean;
 }) {
-  const shape = kind === "folder" ? "rounded-lg" : "rounded-full";
   return (
-    <Link
+    <AppButton
       href={href}
       aria-current={active ? "true" : undefined}
-      className={
-        active
-          ? `inline-flex ${shape} bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground`
-          : kind === "folder"
-            ? `inline-flex ${shape} bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-accent`
-            : `inline-flex ${shape} border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground hover:bg-muted`
-      }
+      variant={active ? "primary" : kind === "folder" ? "peach" : "secondary"}
     >
       {label}
-    </Link>
+    </AppButton>
   );
 }
 
@@ -208,29 +217,41 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <Link
       href={`/recipe/${recipe.slug}`}
-      className="block h-full rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/50 hover:bg-[oklch(0.99_0.015_55)]"
+      className="block h-full overflow-hidden rounded-xl border-2 border-border bg-card transition-colors hover:border-primary/50"
     >
-      <div className="flex items-start gap-3">
-        <div
-          aria-hidden
-          className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-secondary text-2xl"
-        >
+      {recipe.photo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={recipe.photo}
+          alt=""
+          className="h-36 w-full object-cover"
+        />
+      ) : (
+        <div className="flex h-24 items-center justify-center bg-secondary text-4xl">
           {recipe.emoji}
         </div>
-        <div className="min-w-0">
+      )}
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2">
           <h2 className="text-lg leading-snug">{recipe.title}</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{recipe.whyKept}</p>
+          {recipe.favorite ? (
+            <Heart className="size-4 shrink-0 fill-primary text-primary" />
+          ) : null}
         </div>
-      </div>
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Badge variant="secondary" className="rounded-md">
-          {recipe.folder}
-        </Badge>
-        {recipe.tags.map((item) => (
-          <Badge key={item} variant="outline" className="rounded-full">
-            {item}
-          </Badge>
-        ))}
+        <p className="mt-1 text-sm text-muted-foreground">{recipe.whyKept}</p>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="inline-flex rounded-xl border-2 border-border bg-secondary px-2 py-0.5 text-xs font-medium">
+            {recipe.folder}
+          </span>
+          {recipe.tags.map((item) => (
+            <span
+              key={item}
+              className="inline-flex rounded-xl border-2 border-border px-2 py-0.5 text-xs"
+            >
+              {item}
+            </span>
+          ))}
+        </div>
       </div>
     </Link>
   );

@@ -1,9 +1,29 @@
-import type { Recipe } from "@/lib/recipes";
+import type { CookEvent, Recipe } from "@/lib/recipes";
 
 const STORAGE_KEY = "kept-prototype-recipes";
 
 let snapshotRaw: string | null = null;
 let snapshotRecipes: Recipe[] = [];
+const listeners = new Set<() => void>();
+
+function emit() {
+  for (const listener of listeners) {
+    listener();
+  }
+}
+
+export function subscribeKept(onStoreChange: () => void) {
+  listeners.add(onStoreChange);
+  if (typeof window !== "undefined") {
+    window.addEventListener("storage", onStoreChange);
+  }
+  return () => {
+    listeners.delete(onStoreChange);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("storage", onStoreChange);
+    }
+  };
+}
 
 export function slugifyTitle(title: string) {
   const base = title
@@ -42,8 +62,26 @@ export function saveKeptRecipe(recipe: Recipe) {
   window.localStorage.setItem(STORAGE_KEY, raw);
   snapshotRaw = raw;
   snapshotRecipes = next;
+  emit();
 }
 
 export function findKeptRecipe(slug: string) {
   return readKeptRecipes().find((recipe) => recipe.slug === slug);
+}
+
+export function upsertRecipe(recipe: Recipe) {
+  saveKeptRecipe(recipe);
+}
+
+export function addCookEvent(recipe: Recipe, event: Omit<CookEvent, "id">) {
+  const next: Recipe = {
+    ...recipe,
+    lastCooked: event.kind === "made" ? "Today" : recipe.lastCooked,
+    cookLog: [
+      { ...event, id: `${Date.now()}` },
+      ...(recipe.cookLog ?? []),
+    ],
+  };
+  saveKeptRecipe(next);
+  return next;
 }

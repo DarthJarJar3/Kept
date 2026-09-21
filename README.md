@@ -13,7 +13,9 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:43123](http://localhost:43123). Three screens only.
+Open [http://localhost:43123](http://localhost:43123).
+
+The assignment’s three screens are Home, My Kitchen, and a kept recipe. Interview follow-ups also added **Keep** (with a meal photo), **Plan**, and **Profile**. Type and layout scale with the viewport; buttons share one boxed, rounded style.
 
 ---
 

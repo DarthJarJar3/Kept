@@ -1,72 +1,166 @@
-import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import type { Recipe } from "@/lib/recipes";
+"use client";
 
-export function RecipeView({ recipe }: { recipe: Recipe }) {
+import { useState } from "react";
+import Link from "next/link";
+import { Heart, Pencil, Share2 } from "lucide-react";
+import { AppButton } from "@/components/app-button";
+import { addCookEvent, saveKeptRecipe } from "@/lib/kept-store";
+import {
+  kitchenHref,
+  mergeRecipeLists,
+  recipes as seedRecipes,
+  type Recipe,
+} from "@/lib/recipes";
+import { parseServes, scaleAmount } from "@/lib/scale";
+import { useKeptRecipes } from "@/lib/use-kept-recipes";
+
+export function RecipeCook({ recipe }: { recipe: Recipe }) {
+  const kept = useKeptRecipes();
+  const catalog = mergeRecipeLists(kept, seedRecipes);
+  const live = catalog.find((item) => item.slug === recipe.slug) ?? recipe;
+  const baseServes = parseServes(live.servings);
+  const [serves, setServes] = useState(baseServes);
+  const [copied, setCopied] = useState(false);
+  const [logNote, setLogNote] = useState("");
+  const factor = serves / baseServes;
+  const similar = catalog.filter(
+    (item) =>
+      item.slug !== live.slug &&
+      item.tags.some((tag) => live.tags.includes(tag))
+  );
+
+  const scaledIngredients = live.ingredients.map((item) => ({
+    ...item,
+    kept: scaleAmount(item.kept, factor),
+  }));
+
+  function toggleFavorite() {
+    saveKeptRecipe({ ...live, favorite: !live.favorite });
+  }
+
+  async function share() {
+    const text = [
+      live.title,
+      `Serves ${serves}`,
+      "",
+      "Ingredients",
+      ...scaledIngredients.map((item) => `- ${item.kept} ${item.name}`),
+      "",
+      "Steps",
+      ...live.steps.map((step, index) => `${index + 1}. ${step}`),
+      live.notes.length ? `\nNotes\n${live.notes.map((note) => `- ${note}`).join("\n")}` : "",
+    ].join("\n");
+    await navigator.clipboard.writeText(text);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
+  }
+
+  function mark(kind: "made" | "planned") {
+    addCookEvent(live, {
+      date: new Date().toLocaleDateString(),
+      kind,
+      note: logNote.trim() || (kind === "made" ? `Made for ${serves}` : `Plan for ${serves}`),
+    });
+    setLogNote("");
+  }
+
   return (
     <>
-      <p className="text-sm text-muted-foreground">
-        <Link href="/kitchen" className="hover:text-foreground hover:underline">
-          My kitchen
-        </Link>
-        <span aria-hidden> / </span>
-        {recipe.folder}
-      </p>
+      {live.photo ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={live.photo}
+          alt=""
+          className="mb-6 h-52 w-full rounded-2xl object-cover sm:h-72"
+        />
+      ) : null}
 
-      <div className="mt-4 flex items-start gap-3">
-        <div
-          aria-hidden
-          className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-secondary text-3xl"
-        >
-          {recipe.emoji}
+      <div className="flex flex-wrap items-start gap-3">
+        <div className="flex size-14 shrink-0 items-center justify-center rounded-xl border-2 border-border bg-secondary text-3xl">
+          {live.emoji}
         </div>
-        <div>
-          <h1 className="text-3xl sm:text-4xl">{recipe.title}</h1>
+        <div className="min-w-0 flex-1">
+          <h1 className="text-[clamp(1.75rem,3vw+1rem,2.75rem)]">{live.title}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            {recipe.time} · {recipe.servings} · last cooked{" "}
-            {recipe.lastCooked.toLowerCase()}
+            {live.time} · last cooked {live.lastCooked.toLowerCase()}
+            {live.source ? ` · from ${live.source}` : ""}
           </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Badge variant="secondary" className="rounded-md">
-              {recipe.folder}
-            </Badge>
-            {recipe.tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="rounded-full">
-                {tag}
-              </Badge>
-            ))}
-          </div>
         </div>
       </div>
 
-      <section
-        aria-label="Your version"
-        className="mt-8 rounded-2xl border border-primary/35 bg-[oklch(0.96_0.03_52)] p-5"
-      >
-        <p className="text-sm font-medium tracking-wide text-primary uppercase">
-          Your version
+      <div className="mt-5 flex flex-wrap gap-2">
+        <AppButton onClick={toggleFavorite} variant={live.favorite ? "primary" : "secondary"}>
+          <Heart className={live.favorite ? "size-4 fill-current" : "size-4"} />
+          {live.favorite ? "Favorited" : "Favorite"}
+        </AppButton>
+        <AppButton href={`/keep?slug=${live.slug}`} variant="secondary">
+          <Pencil className="size-4" />
+          Edit
+        </AppButton>
+        <AppButton onClick={share} variant="secondary">
+          <Share2 className="size-4" />
+          {copied ? "Copied" : "Share"}
+        </AppButton>
+        <AppButton href={`/plan?add=${live.slug}`} variant="secondary">
+          Add to this week
+        </AppButton>
+      </div>
+
+      <section className="mt-8 rounded-2xl border-2 border-border bg-card p-5">
+        <p className="text-sm font-medium">This recipe serves</p>
+        <p className="mt-1 font-heading text-[clamp(1.75rem,3vw+0.5rem,2.25rem)]">
+          {serves} {serves === 1 ? "person" : "people"}
         </p>
-        <p className="mt-1 font-heading text-xl">{recipe.whyKept}</p>
-        {recipe.notes.length > 0 ? (
+        <p className="mt-1 text-sm text-muted-foreground">
+          Written for {baseServes}. Scale it up or down for the table tonight.
+        </p>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          {[2, 4, 6, 8, 12].map((count) => (
+            <AppButton
+              key={count}
+              variant={serves === count ? "primary" : "secondary"}
+              onClick={() => setServes(count)}
+              className="min-h-10 px-3"
+            >
+              {count}
+            </AppButton>
+          ))}
+          <label className="flex items-center gap-2">
+            <span className="text-sm font-medium">Custom</span>
+            <input
+              type="number"
+              min={1}
+              max={24}
+              value={serves}
+              onChange={(event) =>
+                setServes(Math.max(1, Number(event.target.value) || 1))
+              }
+              aria-label="Custom serving count"
+              className="h-11 w-20 rounded-xl border-2 border-border bg-background px-3 text-center"
+            />
+          </label>
+        </div>
+      </section>
+
+      {live.notes.length > 0 ? (
+        <section className="mt-8">
+          <h2 className="text-2xl">Notes</h2>
           <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-relaxed">
-            {recipe.notes.map((note) => (
+            {live.notes.map((note) => (
               <li key={note}>{note}</li>
             ))}
           </ul>
-        ) : null}
-        <p className="mt-4 text-xs text-muted-foreground">
-          Originally from {recipe.source}. The list below is how you make it now.
-        </p>
-      </section>
+        </section>
+      ) : null}
 
       <div className="mt-10 grid gap-10 lg:grid-cols-2">
         <section>
           <h2 className="text-2xl">Ingredients</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Changed amounts sit together so you can see what you actually use.
+            Amounts below are for {serves} people.
           </p>
           <ul className="mt-4 divide-y divide-border">
-            {recipe.ingredients.map((item) => (
+            {scaledIngredients.map((item) => (
               <li key={`${item.name}-${item.kept}`} className="py-3">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <span className="font-medium">{item.name}</span>
@@ -85,7 +179,7 @@ export function RecipeView({ recipe }: { recipe: Recipe }) {
         <section>
           <h2 className="text-2xl">Steps</h2>
           <ol className="mt-4 space-y-3">
-            {recipe.steps.map((step, index) => (
+            {live.steps.map((step, index) => (
               <li key={step} className="flex gap-3">
                 <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-medium">
                   {index + 1}
@@ -96,6 +190,78 @@ export function RecipeView({ recipe }: { recipe: Recipe }) {
           </ol>
         </section>
       </div>
+
+      <section className="mt-12">
+        <h2 className="text-2xl">Tags</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Tap a tag to see other recipes like this.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {live.tags.map((tag) => (
+            <AppButton
+              key={tag}
+              href={kitchenHref({ tag })}
+              variant="secondary"
+            >
+              {tag}
+            </AppButton>
+          ))}
+        </div>
+        {similar.length > 0 ? (
+          <div className="mt-10">
+            <h3 className="font-heading text-xl">More with these tags</h3>
+            <ul className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {similar.slice(0, 3).map((item) => (
+                <li key={item.slug}>
+                  <Link
+                    href={`/recipe/${item.slug}`}
+                    className="block rounded-xl border-2 border-border bg-card p-4 hover:border-primary/50"
+                  >
+                    <p className="text-lg">{item.title}</p>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {item.tags.join(" · ")}
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+      </section>
+
+      <section className="mt-12 rounded-2xl border-2 border-border bg-card p-5">
+        <h2 className="text-2xl">Previous edits and cooks</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Mark when you make it or plan it, and leave a note about what you
+          changed.
+        </p>
+        <input
+          value={logNote}
+          onChange={(event) => setLogNote(event.target.value)}
+          placeholder="Used browned butter again, extra salt"
+          className="mt-4 h-12 w-full rounded-xl border-2 border-border bg-background px-3"
+        />
+        <div className="mt-3 flex flex-wrap gap-2">
+          <AppButton onClick={() => mark("made")}>I made this</AppButton>
+          <AppButton variant="secondary" onClick={() => mark("planned")}>
+            Plan this
+          </AppButton>
+        </div>
+        {(live.cookLog ?? []).length === 0 ? (
+          <p className="mt-4 text-sm text-muted-foreground">No cooks logged yet.</p>
+        ) : (
+          <ul className="mt-4 space-y-2">
+            {(live.cookLog ?? []).map((event) => (
+              <li key={event.id} className="rounded-xl border border-border px-3 py-2 text-sm">
+                <span className="font-medium">
+                  {event.kind === "made" ? "Made" : "Planned"} {event.date}
+                </span>
+                {event.note ? <p className="text-muted-foreground">{event.note}</p> : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </>
   );
 }

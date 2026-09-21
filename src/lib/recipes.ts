@@ -5,6 +5,13 @@ export type Ingredient = {
   changed: boolean;
 };
 
+export type CookEvent = {
+  id: string;
+  date: string;
+  kind: "made" | "planned";
+  note: string;
+};
+
 export type Recipe = {
   slug: string;
   title: string;
@@ -19,6 +26,9 @@ export type Recipe = {
   notes: string[];
   ingredients: Ingredient[];
   steps: string[];
+  favorite?: boolean;
+  photo?: string;
+  cookLog?: CookEvent[];
 };
 
 export const folders = ["Weeknight", "Baking", "Sunday dinner"] as const;
@@ -385,15 +395,22 @@ export function getFolderCount(folder: string) {
   return recipes.filter((recipe) => recipe.folder === folder).length;
 }
 
+export function mergeRecipeLists(kept: Recipe[], seed: Recipe[] = recipes) {
+  const keptSlugs = new Set(kept.map((recipe) => recipe.slug));
+  return [...kept, ...seed.filter((recipe) => !keptSlugs.has(recipe.slug))];
+}
+
 export function filterRecipes({
   folder,
   tag,
   query,
+  favorite,
   list = recipes,
 }: {
   folder?: string;
   tag?: string;
   query?: string;
+  favorite?: boolean;
   list?: Recipe[];
 }) {
   const needle = query?.trim().toLowerCase() ?? "";
@@ -401,11 +418,17 @@ export function filterRecipes({
     const matchesQuery =
       !needle ||
       recipe.title.toLowerCase().includes(needle) ||
+      recipe.folder.toLowerCase().includes(needle) ||
       recipe.tags.some((item) => item.includes(needle)) ||
-      recipe.folder.toLowerCase().includes(needle);
+      recipe.ingredients.some(
+        (item) =>
+          item.name.toLowerCase().includes(needle) ||
+          item.kept.toLowerCase().includes(needle)
+      );
     const matchesFolder = !folder || recipe.folder === folder;
     const matchesTag = !tag || recipe.tags.includes(tag);
-    return matchesQuery && matchesFolder && matchesTag;
+    const matchesFavorite = !favorite || recipe.favorite;
+    return matchesQuery && matchesFolder && matchesTag && matchesFavorite;
   });
 }
 
@@ -413,14 +436,17 @@ export function kitchenHref({
   folder,
   tag,
   query,
+  favorite,
 }: {
   folder?: string;
   tag?: string;
   query?: string;
+  favorite?: boolean;
 }) {
   const params = new URLSearchParams();
   if (folder) params.set("folder", folder);
   if (tag) params.set("tag", tag);
+  if (favorite) params.set("favorite", "1");
   if (query?.trim()) params.set("q", query.trim());
   const search = params.toString();
   return search ? `/kitchen?${search}` : "/kitchen";

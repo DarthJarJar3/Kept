@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Fraunces, Nunito_Sans } from "next/font/google";
+import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -18,14 +20,18 @@ export const metadata: Metadata = {
     "Save recipes the way you cook them, then find them again by folder or tag.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: ReactNode;
+}>) {
   return (
     <html
       lang="en"
       className={`${fraunces.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

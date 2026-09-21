@@ -1,42 +1,41 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { ArrowRight, Plus } from "lucide-react";
+import { AppButton } from "@/components/app-button";
+import { HomeGreeting } from "@/components/home-greeting";
+import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
-import { cn } from "@/lib/utils";
 
 export default function HomePage() {
   return (
     <div className="flex min-h-full flex-col">
       <SiteHeader current="home" />
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-10 sm:px-6 sm:py-16">
+      <PageShell>
         <section className="max-w-3xl">
-          <h1 className="text-4xl leading-[1.12] text-balance sm:text-5xl sm:leading-[1.1]">
+          <HomeGreeting />
+          <h1 className="text-[clamp(1.85rem,4vw+0.5rem,3.15rem)] leading-[1.12] text-balance">
             Keep the recipe the way you actually make it.
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
             Then find it when dinner starts — not buried in a blog, a screenshot,
             or last year&apos;s search history.
           </p>
-          <div className="mt-8">
-            <Link
-              href="/kitchen"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "h-12 px-6 text-base"
-              )}
-            >
-              Find a recipe I kept
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <AppButton href="/kitchen" className="w-full sm:w-auto">
+              Find my recipes
               <ArrowRight className="size-4" />
-            </Link>
+            </AppButton>
+            <AppButton href="/keep" variant="secondary" className="w-full sm:w-auto">
+              <Plus className="size-4" />
+              Keep a recipe
+            </AppButton>
           </div>
         </section>
 
         <section
           aria-label="What a kept recipe looks like"
-          className="mt-14 max-w-3xl rounded-2xl border border-border bg-card p-4 sm:p-6"
+          className="mt-14 max-w-4xl rounded-2xl border border-border bg-card p-4 sm:p-6"
         >
           <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
-            Same cookies. Your version.
+            Same cookies. Yours.
           </p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <CompareCard
@@ -59,7 +58,7 @@ export default function HomePage() {
             />
           </div>
         </section>
-      </main>
+      </PageShell>
     </div>
   );
 }
@@ -78,7 +77,7 @@ function CompareCard({
     <div
       className={
         kept
-          ? "rounded-xl border border-primary/35 bg-[oklch(0.96_0.03_52)] p-4"
+          ? "rounded-xl border border-primary/35 bg-secondary p-4"
           : "rounded-xl border border-border bg-muted/60 p-4"
       }
     >
