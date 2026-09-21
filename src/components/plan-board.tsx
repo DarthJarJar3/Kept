@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { AppButton } from "@/components/app-button";
 import {
   PLAN_DAYS,
@@ -13,23 +12,15 @@ import {
   recipes as seedRecipes,
   type Recipe,
 } from "@/lib/recipes";
-import { useHasMounted } from "@/lib/use-has-mounted";
 import { useKeptRecipes } from "@/lib/use-kept-recipes";
 
-export function PlanBoard() {
-  const searchParams = useSearchParams();
-  const addSlug = searchParams.get("add");
-  const mounted = useHasMounted();
+export function PlanBoard({ addSlug }: { addSlug?: string }) {
   const plan = useWeekPlan();
   const kept = useKeptRecipes();
   const recipes = mergeRecipeLists(kept, seedRecipes);
   const pending = addSlug
     ? recipes.find((recipe) => recipe.slug === addSlug)
     : undefined;
-
-  if (!mounted) {
-    return <p className="text-muted-foreground">Opening this week’s plan…</p>;
-  }
 
   return (
     <div className="space-y-8">

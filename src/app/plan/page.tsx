@@ -1,16 +1,19 @@
-import { Suspense } from "react";
 import { PageShell } from "@/components/page-shell";
 import { PlanBoard } from "@/components/plan-board";
 import { SiteHeader } from "@/components/site-header";
 
-export default function PlanPage() {
+type PlanPageProps = {
+  searchParams: Promise<{ add?: string }>;
+};
+
+export default async function PlanPage({ searchParams }: PlanPageProps) {
+  const { add } = await searchParams;
+
   return (
     <div className="flex min-h-full flex-col">
       <SiteHeader current="plan" />
       <PageShell wide>
-        <Suspense fallback={<p className="text-muted-foreground">Opening this week’s plan…</p>}>
-          <PlanBoard />
-        </Suspense>
+        <PlanBoard addSlug={add} />
       </PageShell>
     </div>
   );

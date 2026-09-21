@@ -1,14 +1,12 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { AppButton } from "@/components/app-button";
 import {
   applyProfileName,
   applyTheme,
   themes,
 } from "@/components/theme-provider";
-import { useHasMounted } from "@/lib/use-has-mounted";
-import { useState } from "react";
 
 function subscribeProfile(onStoreChange: () => void) {
   window.addEventListener("storage", onStoreChange);
@@ -20,21 +18,14 @@ function subscribeProfile(onStoreChange: () => void) {
 }
 
 function readName() {
-  if (typeof window === "undefined") {
-    return "";
-  }
   return window.localStorage.getItem("kept-name") ?? "";
 }
 
 function readTheme() {
-  if (typeof window === "undefined") {
-    return "peach";
-  }
   return window.localStorage.getItem("kept-theme") ?? "peach";
 }
 
 export function ProfileForm() {
-  const mounted = useHasMounted();
   const storedName = useSyncExternalStore(subscribeProfile, readName, () => "");
   const storedTheme = useSyncExternalStore(
     subscribeProfile,
@@ -46,10 +37,6 @@ export function ProfileForm() {
   const [saved, setSaved] = useState(false);
   const liveName = name ?? storedName;
   const liveTheme = theme ?? storedTheme;
-
-  if (!mounted) {
-    return <p className="text-muted-foreground">Opening profile…</p>;
-  }
 
   return (
     <form

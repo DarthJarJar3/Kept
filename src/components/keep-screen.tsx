@@ -1,18 +1,13 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { KeepRecipeForm } from "@/components/keep-recipe-form";
 import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
 import { mergeRecipeLists } from "@/lib/recipes";
-import { useHasMounted } from "@/lib/use-has-mounted";
 import { useKeptRecipes } from "@/lib/use-kept-recipes";
 
-export function KeepScreen() {
-  const searchParams = useSearchParams();
-  const slug = searchParams.get("slug") ?? undefined;
+export function KeepScreen({ slug }: { slug?: string }) {
   const kept = useKeptRecipes();
-  const mounted = useHasMounted();
   const initial = slug
     ? mergeRecipeLists(kept).find((recipe) => recipe.slug === slug)
     : undefined;
@@ -33,14 +28,10 @@ export function KeepScreen() {
           from My Kitchen and see the same details as the other kept recipes.
         </p>
         <div className="mt-8">
-          {!mounted ? (
-            <p className="text-muted-foreground">Opening the keep form…</p>
-          ) : (
-            <KeepRecipeForm
-              key={`${slug ?? "new"}-${initial ? "loaded" : "empty"}`}
-              initial={initial}
-            />
-          )}
+          <KeepRecipeForm
+            key={`${slug ?? "new"}-${initial ? "loaded" : "empty"}`}
+            initial={initial}
+          />
         </div>
       </PageShell>
     </div>
