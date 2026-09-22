@@ -16,16 +16,13 @@ export function KeepScreen({ slug }: { slug?: string }) {
     <div className="flex min-h-full flex-col">
       <SiteHeader current="keep" />
       <PageShell>
-        <p className="text-sm text-muted-foreground">
-          Save it the way you actually make it — folder, tags, a photo, and your
-          amounts.
-        </p>
-        <h1 className="mt-2 text-[clamp(1.75rem,3vw+1rem,2.5rem)]">
+        <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">
           {initial ? "Edit this recipe" : "Keep a recipe"}
         </h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
-          This is a visual prototype. It stays in this browser so you can open it
-          from My Kitchen and see the same details as the other kept recipes.
+          {initial
+            ? "Change the amounts, notes, or photo — this stays the version you cook from."
+            : "Two ways in: bring one over from a link, or write the version you already make."}
         </p>
         <div className="mt-8">
           <KeepRecipeForm

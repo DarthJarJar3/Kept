@@ -1,8 +1,8 @@
 "use client";
 
-import { type FormEvent, useId, useRef, useState } from "react";
+import { type FormEvent, type ReactNode, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Heart, ImagePlus, Plus, Trash2 } from "lucide-react";
+import { Heart, ImagePlus, Link2, PenLine, Plus, Trash2 } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { recipeFromPastedUrl } from "@/lib/demo-from-url";
 import { saveKeptRecipe, slugifyTitle } from "@/lib/kept-store";
@@ -82,6 +82,9 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
   const [source, setSource] = useState(initial?.source ?? "");
   const [pasteUrl, setPasteUrl] = useState("");
   const [urlNotice, setUrlNotice] = useState("");
+  const [step, setStep] = useState<"choose" | "link" | "form">(
+    editing ? "form" : "choose"
+  );
   const [whyKept, setWhyKept] = useState(initial?.whyKept ?? "");
   const [notes, setNotes] = useState(initial?.notes.join("\n") ?? "");
   const [ingredients, setIngredients] = useState<IngredientDraft[]>(
@@ -157,8 +160,30 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
     const recipe = recipeFromPastedUrl(pasteUrl);
     applyRecipe(recipe, pasteUrl.trim() || recipe.source);
     setUrlNotice(
-      "This prototype does not scrape the web. It filled a sample recipe so you can see the keep flow."
+      "Brought in from your link. This prototype fills a sample — change anything that isn’t how you actually cook it."
     );
+    setStep("form");
+  }
+
+  function startOver() {
+    setStep("choose");
+    setPasteUrl("");
+    setUrlNotice("");
+    setTitle("");
+    setEmoji("🍪");
+    setPhoto("");
+    setPhotoError("");
+    setFolder("Weeknight");
+    setSelectedTags([]);
+    setCustomTag("");
+    setFavorite(false);
+    setTime("");
+    setServings("");
+    setSource("");
+    setWhyKept("");
+    setNotes("");
+    setIngredients(draftsFrom());
+    setSteps("");
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -218,36 +243,81 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
     router.push(`/recipe/${recipe.slug}`);
   }
 
+  if (!editing && step === "choose") {
+    return (
+      <div className="grid gap-4 md:grid-cols-2">
+        <OptionCard
+          number="1"
+          icon={<Link2 className="size-5" />}
+          title="From a link"
+          body="Paste a blog, pin, or shared recipe. We’ll bring it in, then you keep the amounts you actually use."
+          action="Paste a link"
+          onClick={() => setStep("link")}
+        />
+        <OptionCard
+          number="2"
+          icon={<PenLine className="size-5" />}
+          title="Write it yourself"
+          body="Start blank. Name it, add a photo, and write the version that already worked in this kitchen."
+          action="Start from scratch"
+          onClick={() => setStep("form")}
+        />
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <section className="rounded-2xl border-2 border-border bg-card p-4 sm:p-5">
-        <h2 className="font-heading text-xl">Paste a recipe URL</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Visual prototype only — paste any link and we fill a sample so you can
-          edit the amounts you actually use.
-        </p>
-        <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-          <input
-            value={pasteUrl}
-            onChange={(event) => setPasteUrl(event.target.value)}
-            placeholder="https://…"
-            className={fieldClass}
-            aria-label="Recipe URL"
-          />
-          <AppButton
-            type="button"
-            variant="secondary"
-            className="shrink-0"
-            onClick={fillFromUrl}
-          >
-            Fill sample
+      {!editing ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <AppButton type="button" variant="secondary" onClick={startOver}>
+            Choose a different way
           </AppButton>
         </div>
-        {urlNotice ? (
-          <p className="mt-2 text-sm text-muted-foreground">{urlNotice}</p>
-        ) : null}
-      </section>
+      ) : null}
 
+      {!editing && step === "link" ? (
+        <section className="rounded-2xl border-2 border-primary/40 bg-secondary/70 p-4 sm:p-5">
+          <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+            Option 1
+          </p>
+          <h2 className="mt-1 font-heading text-xl">Paste the link</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Drop in a URL. We’ll pull the recipe across so you can edit it into
+            the version you keep.
+          </p>
+          <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <input
+              value={pasteUrl}
+              onChange={(event) => setPasteUrl(event.target.value)}
+              placeholder="https://…"
+              className={fieldClass}
+              aria-label="Recipe URL"
+            />
+            <AppButton
+              type="button"
+              className="shrink-0"
+              onClick={fillFromUrl}
+            >
+              Bring it in
+            </AppButton>
+          </div>
+        </section>
+      ) : null}
+
+      {urlNotice ? (
+        <p className="rounded-2xl border-2 border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+          {urlNotice}
+        </p>
+      ) : null}
+
+      {step === "form" || editing ? (
+        <>
+      {!editing && !urlNotice ? (
+        <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+          Option 2 · Write it yourself
+        </p>
+      ) : null}
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <fieldset>
           <legend className="mb-2 text-sm font-medium">Icon</legend>
@@ -572,6 +642,46 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
       <AppButton type="submit" className="min-h-12 px-6 text-base">
         {editing ? "Save this recipe" : "Keep this recipe"}
       </AppButton>
+        </>
+      ) : null}
     </form>
+  );
+}
+
+function OptionCard({
+  number,
+  icon,
+  title,
+  body,
+  action,
+  onClick,
+}: {
+  number: string;
+  icon: ReactNode;
+  title: string;
+  body: string;
+  action: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full flex-col items-start rounded-2xl border-2 border-border bg-card p-5 text-left transition-colors hover:border-primary/50 hover:bg-secondary"
+    >
+      <span className="inline-flex size-9 items-center justify-center rounded-xl border-2 border-primary bg-primary text-sm font-medium text-primary-foreground">
+        {number}
+      </span>
+      <span className="mt-4 inline-flex items-center gap-2 font-heading text-xl">
+        {icon}
+        {title}
+      </span>
+      <span className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        {body}
+      </span>
+      <span className="mt-5 inline-flex min-h-11 items-center rounded-xl border-2 border-primary bg-primary px-4 text-sm font-medium text-primary-foreground">
+        {action}
+      </span>
+    </button>
   );
 }
