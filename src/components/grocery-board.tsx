@@ -17,10 +17,21 @@ export function GroceryBoard() {
   const items = useGrocery();
   const [copied, setCopied] = useState(false);
   const needed = items.filter((item) => !item.checked).length;
+  const listText = groceryAsText(items);
 
   async function copyList() {
-    await navigator.clipboard.writeText(groceryAsText(items));
-    setCopied(true);
+    try {
+      await navigator.clipboard.writeText(listText);
+      setCopied(true);
+    } catch {
+      const area = document.createElement("textarea");
+      area.value = listText;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      area.remove();
+      setCopied(true);
+    }
     window.setTimeout(() => setCopied(false), 2000);
   }
 
@@ -45,6 +56,21 @@ export function GroceryBoard() {
           ) : null}
         </div>
       </div>
+
+      {items.length > 0 ? (
+        <section className="rounded-2xl border-2 border-border bg-card p-4">
+          <h2 className="font-heading text-xl">Text to share</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Copy this into a message or your phone’s list. Checked items stay off it.
+          </p>
+          <textarea
+            readOnly
+            value={listText}
+            aria-label="Grocery list as text"
+            className="mt-3 min-h-40 w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm"
+          />
+        </section>
+      ) : null}
 
       {items.length === 0 ? (
         <div className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-12 text-center">
