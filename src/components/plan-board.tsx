@@ -25,6 +25,13 @@ import { useKeptRecipes } from "@/lib/use-kept-recipes";
 const fieldClass =
   "h-11 min-w-0 flex-1 rounded-xl border-2 border-border bg-background px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring";
 
+const NOTE_PLACEHOLDERS: Record<MealSlot, string> = {
+  breakfast: "Yoghurt, toast, an apple…",
+  lunch: "Grilled cheese, leftovers, a salad…",
+  dinner: "Tacos, pot roast, lemon chicken…",
+  dessert: "Cookies, ice cream, fruit…",
+};
+
 export function PlanBoard({ addSlug }: { addSlug?: string }) {
   const plan = useWeekPlan();
   const kept = useKeptRecipes();
@@ -172,7 +179,7 @@ function MealSlotEditor({
               addNote();
             }
           }}
-          placeholder="Yoghurt, toast, an apple…"
+          placeholder={NOTE_PLACEHOLDERS[slot]}
           aria-label={`${SLOT_LABELS[slot]} note for ${day}`}
           className={fieldClass}
         />
