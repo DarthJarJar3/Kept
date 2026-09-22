@@ -21,7 +21,7 @@ export function SiteHeader({ current = "home" }: { current?: NavId }) {
         <nav aria-label="Main" className="site-nav">
           <AppButton
             href="/"
-            variant={activeId === "home" ? "primary" : "peach"}
+            variant="peach"
             className="font-heading text-lg shrink-0"
             aria-current={activeId === "home" ? "page" : undefined}
             aria-label="Kept home"
