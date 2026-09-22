@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Heart, Pencil, Share2 } from "lucide-react";
+import { Heart, Pencil, Share2, ShoppingBasket } from "lucide-react";
 import { AppButton } from "@/components/app-button";
+import { addIngredientsToGrocery } from "@/lib/grocery-store";
 import { addCookEvent, saveKeptRecipe } from "@/lib/kept-store";
 import {
   kitchenHref,
@@ -21,6 +22,7 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
   const baseServes = parseServes(live.servings);
   const [serves, setServes] = useState(baseServes);
   const [copied, setCopied] = useState(false);
+  const [listed, setListed] = useState(false);
   const [logNote, setLogNote] = useState("");
   const factor = serves / baseServes;
   const similar = catalog.filter(
@@ -104,6 +106,27 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
         <AppButton href={`/plan?add=${live.slug}`} variant="secondary">
           Add to this week
         </AppButton>
+        <AppButton
+          variant="secondary"
+          onClick={() => {
+            addIngredientsToGrocery(
+              scaledIngredients.map((item) => ({
+                name: item.name,
+                amount: item.kept,
+                recipeTitle: live.title,
+              }))
+            );
+            setListed(true);
+          }}
+        >
+          <ShoppingBasket className="size-4" />
+          {listed ? "On the list" : "Add to grocery list"}
+        </AppButton>
+        {listed ? (
+          <AppButton href="/grocery" variant="peach">
+            Open list
+          </AppButton>
+        ) : null}
       </div>
 
       <section className="mt-8 rounded-2xl border-2 border-border bg-card p-5">

@@ -2,13 +2,23 @@
 
 import { AppButton } from "@/components/app-button";
 
-type NavId = "home" | "kitchen" | "recipe" | "keep" | "plan" | "profile";
+type NavId =
+  | "home"
+  | "kitchen"
+  | "recipe"
+  | "keep"
+  | "plan"
+  | "pantry"
+  | "grocery"
+  | "profile";
 
 const links: { id: NavId; href: string; label: string }[] = [
   { id: "home", href: "/", label: "Home" },
   { id: "kitchen", href: "/kitchen", label: "My Kitchen" },
   { id: "keep", href: "/keep", label: "Keep" },
   { id: "plan", href: "/plan", label: "Plan" },
+  { id: "pantry", href: "/pantry", label: "Pantry" },
+  { id: "grocery", href: "/grocery", label: "List" },
   { id: "profile", href: "/profile", label: "Profile" },
 ];
 
