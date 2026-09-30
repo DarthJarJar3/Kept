@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { Carrot } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 
 type NavId =
@@ -26,18 +28,19 @@ export function SiteHeader({ current = "home" }: { current?: NavId }) {
   const activeId = current === "recipe" ? "kitchen" : current;
 
   return (
-    <header className="sticky top-0 z-20 border-b-2 border-primary/35 bg-secondary/95 shadow-[0_8px_24px_-18px_oklch(0.45_0.06_45)] backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-border bg-background/90 backdrop-blur">
       <div className="page-shell page-shell-wide py-3">
         <nav aria-label="Main" className="site-nav">
-          <AppButton
+          <Link
             href="/"
-            variant="peach"
-            className="font-heading text-lg shrink-0"
-            aria-current={activeId === "home" ? "page" : undefined}
             aria-label="Kept home"
+            className="mr-1 inline-flex shrink-0 items-center gap-2 pr-1"
           >
-            Kept
-          </AppButton>
+            <span className="flex size-9 items-center justify-center rounded-xl bg-forest text-white">
+              <Carrot className="size-5" />
+            </span>
+            <span className="text-lg font-bold tracking-tight">Kept</span>
+          </Link>
           {links.map((link) => (
             <AppButton
               key={link.id}

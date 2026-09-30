@@ -73,12 +73,12 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
         <img
           src={live.photo}
           alt=""
-          className="mb-6 h-52 w-full rounded-2xl object-cover sm:h-72"
+          className="mb-6 h-56 w-full rounded-3xl object-cover shadow-mealtime sm:h-80"
         />
       ) : null}
 
       <div className="flex flex-wrap items-start gap-3">
-        <div className="flex size-14 shrink-0 items-center justify-center rounded-xl border-2 border-border bg-secondary text-3xl">
+        <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-secondary text-3xl">
           {live.emoji}
         </div>
         <div className="min-w-0 flex-1">
@@ -129,7 +129,7 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
         ) : null}
       </div>
 
-      <section className="mt-8 rounded-2xl border-2 border-border bg-card p-5">
+      <section className="mt-8 rounded-3xl border border-border bg-card shadow-mealtime p-5">
         <p className="text-sm font-medium">This recipe serves</p>
         <p className="mt-1 font-heading text-[clamp(1.75rem,3vw+0.5rem,2.25rem)]">
           {serves} {serves === 1 ? "person" : "people"}
@@ -159,7 +159,7 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
                 setServes(Math.max(1, Number(event.target.value) || 1))
               }
               aria-label="Custom serving count"
-              className="h-11 w-20 rounded-xl border-2 border-border bg-background px-3 text-center"
+              className="h-11 w-20 rounded-full border border-border bg-card px-3 text-center"
             />
           </label>
         </div>
@@ -238,7 +238,7 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
                 <li key={item.slug}>
                   <Link
                     href={`/recipe/${item.slug}`}
-                    className="block rounded-xl border-2 border-border bg-card p-4 hover:border-primary/50"
+                    className="block rounded-2xl border border-border bg-card shadow-mealtime p-4 hover:border-primary/40"
                   >
                     <p className="text-lg">{item.title}</p>
                     <p className="mt-1 text-sm text-muted-foreground">
@@ -252,7 +252,7 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
         ) : null}
       </section>
 
-      <section className="mt-12 rounded-2xl border-2 border-border bg-card p-5">
+      <section className="mt-12 rounded-3xl border border-border bg-card shadow-mealtime p-5">
         <h2 className="text-2xl">Previous edits and cooks</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Mark when you make it or plan it, and leave a note about what you
@@ -262,7 +262,7 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
           value={logNote}
           onChange={(event) => setLogNote(event.target.value)}
           placeholder="Used browned butter again, extra salt"
-          className="mt-4 h-12 w-full rounded-xl border-2 border-border bg-background px-3"
+          className="mt-4 h-12 w-full rounded-full border border-border bg-card px-3"
         />
         <div className="mt-3 flex flex-wrap gap-2">
           <AppButton onClick={() => mark("made")}>I made this</AppButton>

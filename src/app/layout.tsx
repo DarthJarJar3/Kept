@@ -1,16 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Fraunces, Nunito_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-});
-
-const nunito = Nunito_Sans({
-  variable: "--font-nunito",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
   subsets: ["latin"],
 });
 
@@ -28,7 +23,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${nunito.variable} h-full antialiased`}
+      className={`${jakarta.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <ThemeProvider>{children}</ThemeProvider>

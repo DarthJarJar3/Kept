@@ -37,10 +37,10 @@ const emojis = [
 ];
 
 const fieldClass =
-  "h-11 w-full rounded-xl border-2 border-border bg-card px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring md:text-sm";
+  "h-12 w-full rounded-full border border-border bg-card px-4 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring md:text-sm";
 
 const areaClass =
-  "min-h-28 w-full rounded-xl border-2 border-border bg-card px-3 py-2 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring md:text-sm";
+  "min-h-28 w-full rounded-3xl border border-border bg-card px-4 py-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring md:text-sm";
 
 type IngredientDraft = {
   name: string;
@@ -277,7 +277,7 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
       ) : null}
 
       {!editing && step === "link" ? (
-        <section className="rounded-2xl border-2 border-primary/40 bg-secondary/70 p-4 sm:p-5">
+        <section className="rounded-3xl border border-primary/15 bg-secondary shadow-mealtime p-4 sm:p-5">
           <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
             Option 1
           </p>
@@ -306,7 +306,7 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
       ) : null}
 
       {urlNotice ? (
-        <p className="rounded-2xl border-2 border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+        <p className="rounded-3xl border border-border bg-card shadow-mealtime px-4 py-3 text-sm text-muted-foreground">
           {urlNotice}
         </p>
       ) : null}
@@ -358,13 +358,13 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
         </div>
       </div>
 
-      <section className="rounded-2xl border-2 border-border bg-card p-4 sm:p-5">
+      <section className="rounded-3xl border border-border bg-card shadow-mealtime p-4 sm:p-5">
         <h2 className="font-heading text-xl">Picture of the meal</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Optional. Shows on the kitchen card and at the top of the recipe.
         </p>
         {photo ? (
-          <div className="mt-4 overflow-hidden rounded-2xl border-2 border-border">
+          <div className="mt-4 overflow-hidden rounded-2xl border border-border">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={photo}
@@ -375,7 +375,7 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
         ) : (
           <label
             htmlFor={photoInputId}
-            className="mt-4 flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border bg-muted/40 px-4 text-center"
+            className="mt-4 flex min-h-40 cursor-pointer flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-border bg-muted/40 px-4 text-center"
           >
             <ImagePlus className="size-6 text-muted-foreground" />
             <span className="text-sm font-medium">Tap to add a photo</span>
@@ -421,7 +421,7 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
       </section>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <fieldset className="rounded-2xl border-2 border-border bg-card p-4">
+        <fieldset className="rounded-3xl border border-border bg-card shadow-mealtime p-4">
           <legend className="font-heading text-lg">Folder</legend>
           <p className="mb-3 text-sm text-muted-foreground">
             One place you would look
@@ -441,7 +441,7 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
           </div>
         </fieldset>
 
-        <fieldset className="rounded-2xl border-2 border-border bg-card p-4">
+        <fieldset className="rounded-3xl border border-border bg-card shadow-mealtime p-4">
           <legend className="font-heading text-lg">Tags</legend>
           <p className="mb-3 text-sm text-muted-foreground">
             Find this recipe another way
@@ -521,7 +521,7 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
         </label>
       </div>
 
-      <section className="rounded-2xl border-2 border-primary/35 bg-secondary/60 p-5">
+      <section className="rounded-3xl border border-primary/15 bg-secondary shadow-mealtime p-5">
         <label className="block">
           <span className="mb-2 block text-sm font-medium">
             Why this is the one you keep
@@ -575,7 +575,7 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
           {ingredients.map((item, index) => (
             <li
               key={index}
-              className="grid gap-2 rounded-2xl border-2 border-border bg-card p-3 sm:grid-cols-[1fr_1fr_1fr_auto]"
+              className="grid gap-2 rounded-3xl border border-border bg-card shadow-mealtime p-3 sm:grid-cols-[1fr_1fr_1fr_auto]"
             >
               <input
                 value={item.name}
@@ -667,9 +667,9 @@ function OptionCard({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full flex-col items-start rounded-2xl border-2 border-border bg-card p-5 text-left transition-colors hover:border-primary/50 hover:bg-secondary"
+      className="flex w-full flex-col items-start rounded-3xl border border-border bg-card shadow-mealtime p-5 text-left transition-colors hover:border-primary/40 hover:bg-secondary"
     >
-      <span className="inline-flex size-9 items-center justify-center rounded-xl border-2 border-primary bg-primary text-sm font-medium text-primary-foreground">
+      <span className="inline-flex size-9 items-center justify-center rounded-xl bg-forest text-sm font-semibold text-white">
         {number}
       </span>
       <span className="mt-4 inline-flex items-center gap-2 font-heading text-xl">
@@ -679,7 +679,7 @@ function OptionCard({
       <span className="mt-2 text-sm leading-relaxed text-muted-foreground">
         {body}
       </span>
-      <span className="mt-5 inline-flex min-h-11 items-center rounded-xl border-2 border-primary bg-primary px-4 text-sm font-medium text-primary-foreground">
+      <span className="mt-5 inline-flex min-h-11 items-center rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground">
         {action}
       </span>
     </button>

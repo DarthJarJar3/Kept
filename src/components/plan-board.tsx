@@ -23,7 +23,7 @@ import {
 import { useKeptRecipes } from "@/lib/use-kept-recipes";
 
 const fieldClass =
-  "h-11 min-w-0 flex-1 rounded-xl border-2 border-border bg-background px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring";
+  "h-11 min-w-0 flex-1 rounded-full border border-border bg-card px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring";
 
 const NOTE_PLACEHOLDERS: Record<MealSlot, string> = {
   breakfast: "Yoghurt, toast, an apple…",
@@ -53,7 +53,7 @@ export function PlanBoard({ addSlug }: { addSlug?: string }) {
       </div>
 
       {pending ? (
-        <section className="rounded-2xl border-2 border-primary/40 bg-secondary/70 p-4 sm:p-5">
+        <section className="rounded-3xl border border-primary/15 bg-secondary shadow-mealtime p-4 sm:p-5">
           <p className="font-medium">Add {pending.title}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Pick the meal, then the day.
@@ -96,7 +96,7 @@ export function PlanBoard({ addSlug }: { addSlug?: string }) {
       <ul className="grid gap-4 xl:grid-cols-2">
         {PLAN_DAYS.map((day) => (
           <li key={day}>
-            <article className="rounded-2xl border-2 border-border bg-card p-4">
+            <article className="rounded-3xl border border-border bg-card shadow-mealtime p-4">
               <h2 className="font-heading text-2xl">{day}</h2>
               {MEAL_SLOTS.filter((item) => item !== "dessert").map((item) => (
                 <MealSlotEditor
@@ -204,7 +204,7 @@ function MealRow({
 }) {
   if (entry.kind === "note") {
     return (
-      <li className="flex flex-wrap items-center justify-between gap-2 rounded-xl border-2 border-border px-3 py-2">
+      <li className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border px-3 py-2">
         <p>{entry.text}</p>
         <AppButton
           type="button"
@@ -219,7 +219,7 @@ function MealRow({
 
   const recipe = recipes.find((item) => item.slug === entry.slug);
   return (
-    <li className="flex flex-wrap items-center justify-between gap-2 rounded-xl border-2 border-border bg-secondary/40 px-3 py-2">
+    <li className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-secondary/40 px-3 py-2">
       <p>
         <span className="mr-2">{recipe?.emoji ?? "🍽️"}</span>
         {recipe?.title ?? "A kept recipe"}

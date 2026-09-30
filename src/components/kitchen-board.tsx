@@ -65,13 +65,13 @@ export function KitchenBoard({
         {folder ? <input type="hidden" name="folder" value={folder} /> : null}
         {tag ? <input type="hidden" name="tag" value={tag} /> : null}
         {favorite ? <input type="hidden" name="favorite" value="1" /> : null}
-        <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           name="q"
           defaultValue={query}
           placeholder="Search names, tags, or ingredients"
           aria-label="Search kept recipes"
-          className="h-12 w-full rounded-xl border-2 border-border bg-card pr-24 pl-9 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring"
+          className="h-12 w-full rounded-full border border-border bg-card pr-24 pl-10 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring"
         />
         <AppButton type="submit" className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3">
           Find
@@ -180,7 +180,7 @@ function FilterGroup({
     <div
       role="group"
       aria-label={legend}
-      className="rounded-2xl border border-border bg-card p-4"
+      className="rounded-3xl border border-border bg-card p-4 shadow-mealtime"
     >
       <div className="mb-3">
         <p className="font-heading text-lg leading-none">{title}</p>
@@ -217,21 +217,21 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <Link
       href={`/recipe/${recipe.slug}`}
-      className="block h-full overflow-hidden rounded-xl border-2 border-border bg-card transition-colors hover:border-primary/50"
+      className="block h-full overflow-hidden rounded-3xl border border-border bg-card p-3 shadow-mealtime transition-transform hover:-translate-y-0.5"
     >
       {recipe.photo ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={recipe.photo}
           alt=""
-          className="h-36 w-full object-cover"
+          className="h-40 w-full rounded-2xl object-cover"
         />
       ) : (
-        <div className="flex h-24 items-center justify-center bg-secondary text-4xl">
+        <div className="flex h-28 items-center justify-center rounded-2xl bg-secondary text-4xl">
           {recipe.emoji}
         </div>
       )}
-      <div className="p-4">
+      <div className="px-2 pt-3 pb-2">
         <div className="flex items-start justify-between gap-2">
           <h2 className="text-lg leading-snug">{recipe.title}</h2>
           {recipe.favorite ? (
@@ -240,13 +240,13 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         </div>
         <p className="mt-1 text-sm text-muted-foreground">{recipe.whyKept}</p>
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="inline-flex rounded-xl border-2 border-border bg-secondary px-2 py-0.5 text-xs font-medium">
+          <span className="inline-flex rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-secondary-foreground">
             {recipe.folder}
           </span>
           {recipe.tags.map((item) => (
             <span
               key={item}
-              className="inline-flex rounded-xl border-2 border-border px-2 py-0.5 text-xs"
+              className="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
             >
               {item}
             </span>

@@ -32,7 +32,7 @@ export default function HomePage() {
 
         <section
           aria-label="What a kept recipe looks like"
-          className="mt-14 max-w-4xl rounded-2xl border border-border bg-card p-4 sm:p-6"
+          className="mt-14 max-w-4xl rounded-3xl border border-border bg-card p-4 shadow-mealtime sm:p-6"
         >
           <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
             Same cookies. Yours.
@@ -77,8 +77,8 @@ function CompareCard({
     <div
       className={
         kept
-          ? "rounded-xl border border-primary/35 bg-secondary p-4"
-          : "rounded-xl border border-border bg-muted/60 p-4"
+          ? "rounded-2xl bg-secondary p-4"
+          : "rounded-2xl bg-muted p-4"
       }
     >
       <p

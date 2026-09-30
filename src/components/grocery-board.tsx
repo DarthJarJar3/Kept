@@ -58,7 +58,7 @@ export function GroceryBoard() {
       </div>
 
       {items.length > 0 ? (
-        <section className="rounded-2xl border-2 border-border bg-card p-4">
+        <section className="rounded-3xl border border-border bg-card shadow-mealtime p-4">
           <h2 className="font-heading text-xl">Text to share</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Copy this into a message or your phone’s list. Checked items stay off it.
@@ -67,13 +67,13 @@ export function GroceryBoard() {
             readOnly
             value={listText}
             aria-label="Grocery list as text"
-            className="mt-3 min-h-40 w-full rounded-xl border-2 border-border bg-background px-3 py-2 text-sm"
+            className="mt-3 min-h-40 w-full rounded-3xl border border-border bg-muted/40 px-4 py-3 text-sm"
           />
         </section>
       ) : null}
 
       {items.length === 0 ? (
-        <div className="rounded-2xl border-2 border-dashed border-border bg-card px-6 py-12 text-center">
+        <div className="rounded-3xl border border-dashed border-border bg-card px-6 py-12 text-center">
           <p className="font-medium">Nothing to buy yet.</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Open a recipe and add it to the grocery list.
@@ -90,7 +90,7 @@ export function GroceryBoard() {
               return null;
             }
             return (
-              <section key={aisle} className="rounded-2xl border-2 border-border bg-card p-4">
+              <section key={aisle} className="rounded-3xl border border-border bg-card shadow-mealtime p-4">
                 <h2 className="font-heading text-xl">{aisle}</h2>
                 <ul className="mt-3 space-y-3">
                   {rows.map((item) => (
@@ -129,7 +129,7 @@ function GroceryRow({ item }: { item: GroceryItem }) {
               setGroceryAisle(item.id, event.target.value as Aisle)
             }
             aria-label={`Aisle for ${item.name}`}
-            className="h-11 rounded-xl border-2 border-border bg-background px-3"
+            className="h-11 rounded-full border border-border bg-card px-3"
           >
             {AISLES.map((aisle) => (
               <option key={aisle} value={aisle}>

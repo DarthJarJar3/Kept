@@ -52,8 +52,8 @@ export function ProfileForm() {
       <div>
         <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Profile</h1>
         <p className="mt-2 text-muted-foreground">
-          A name and a kitchen color. No accounts in this prototype — it only
-          lives in this browser.
+          A name and an accent. Mealtime is the orange from the recipe kit.
+          Garden and berry only change that accent.
         </p>
       </div>
 
@@ -66,14 +66,14 @@ export function ProfileForm() {
             setSaved(false);
           }}
           placeholder="The cook this kitchen belongs to"
-          className="h-11 w-full rounded-xl border-2 border-border bg-card px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring"
+          className="h-12 w-full rounded-full border border-border bg-card px-4 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring"
         />
       </label>
 
       <fieldset>
         <legend className="mb-2 text-sm font-medium">Kitchen color</legend>
         <p className="mb-3 text-sm text-muted-foreground">
-          Peach is the default. Sage and berry are here if peach is too sweet.
+          Mealtime orange is the default. Garden and berry keep the same cream paper.
         </p>
         <div className="flex flex-wrap gap-2">
           {themes.map((item) => (
