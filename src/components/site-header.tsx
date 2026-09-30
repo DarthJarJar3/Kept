@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { Carrot } from "lucide-react";
 import { AppButton } from "@/components/app-button";
+import { BrandMark } from "@/design-system";
 
 type NavId =
   | "home"
@@ -12,7 +11,8 @@ type NavId =
   | "plan"
   | "pantry"
   | "grocery"
-  | "profile";
+  | "profile"
+  | "system";
 
 const links: { id: NavId; href: string; label: string }[] = [
   { id: "home", href: "/", label: "Home" },
@@ -22,6 +22,7 @@ const links: { id: NavId; href: string; label: string }[] = [
   { id: "pantry", href: "/pantry", label: "Pantry" },
   { id: "grocery", href: "/grocery", label: "List" },
   { id: "profile", href: "/profile", label: "Profile" },
+  { id: "system", href: "/design-system", label: "System" },
 ];
 
 export function SiteHeader({ current = "home" }: { current?: NavId }) {
@@ -31,16 +32,7 @@ export function SiteHeader({ current = "home" }: { current?: NavId }) {
     <header className="sticky top-0 z-20 border-b border-border bg-background/90 backdrop-blur">
       <div className="page-shell page-shell-wide py-3">
         <nav aria-label="Main" className="site-nav">
-          <Link
-            href="/"
-            aria-label="Kept home"
-            className="mr-1 inline-flex shrink-0 items-center gap-2 pr-1"
-          >
-            <span className="flex size-9 items-center justify-center rounded-xl bg-forest text-white">
-              <Carrot className="size-5" />
-            </span>
-            <span className="text-lg font-bold tracking-tight">Kept</span>
-          </Link>
+          <BrandMark />
           {links.map((link) => (
             <AppButton
               key={link.id}

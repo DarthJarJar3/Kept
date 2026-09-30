@@ -2,6 +2,7 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { AppButton } from "@/components/app-button";
+import { fieldClass } from "@/design-system";
 import {
   applyProfileName,
   applyTheme,
@@ -66,7 +67,7 @@ export function ProfileForm() {
             setSaved(false);
           }}
           placeholder="The cook this kitchen belongs to"
-          className="h-12 w-full rounded-full border border-border bg-card px-4 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring"
+          className={fieldClass}
         />
       </label>
 

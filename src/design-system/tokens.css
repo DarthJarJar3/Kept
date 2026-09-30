@@ -1,0 +1,286 @@
+/*
+  Mealtime recipe kit.
+  Cream paper, forest green, orange pills, soft white cards.
+  Screens read these variables. Do not hard-code a second palette.
+*/
+
+:root {
+  --background: #fffaf5;
+  --foreground: #181818;
+  --card: #ffffff;
+  --card-foreground: #181818;
+  --popover: #ffffff;
+  --popover-foreground: #181818;
+  --primary: #f58701;
+  --primary-foreground: #ffffff;
+  --secondary: #fff1e0;
+  --secondary-foreground: #1c4c30;
+  --muted: #f6efe6;
+  --muted-foreground: #7a7066;
+  --accent: #fff1e0;
+  --accent-foreground: #1c4c30;
+  --destructive: #c44536;
+  --border: #efe4d6;
+  --input: #efe4d6;
+  --ring: #f58701;
+  --forest: #1c4c30;
+  --chart-1: #f58701;
+  --chart-2: #1c4c30;
+  --chart-3: #f6efe6;
+  --chart-4: #7a7066;
+  --chart-5: #181818;
+  --radius: 1.25rem;
+  --radius-pill: 999px;
+  --radius-card: 1.5rem;
+  --radius-mark: 0.75rem;
+  --shadow-card: 0 18px 40px -28px rgb(24 24 24 / 0.55);
+  --sidebar: #fffaf5;
+  --sidebar-foreground: #181818;
+  --sidebar-primary: #f58701;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fff1e0;
+  --sidebar-accent-foreground: #1c4c30;
+  --sidebar-border: #efe4d6;
+  --sidebar-ring: #f58701;
+}
+
+html[data-theme="sage"],
+.ds-theme-garden {
+  --primary: #1c4c30;
+  --primary-foreground: #fffaf5;
+  --secondary: #e7f2ea;
+  --secondary-foreground: #1c4c30;
+  --accent: #e7f2ea;
+  --accent-foreground: #1c4c30;
+  --ring: #1c4c30;
+}
+
+html[data-theme="berry"],
+.ds-theme-berry {
+  --primary: #c44536;
+  --primary-foreground: #fffaf5;
+  --secondary: #fdecea;
+  --secondary-foreground: #6d241c;
+  --accent: #fdecea;
+  --accent-foreground: #6d241c;
+  --ring: #c44536;
+}
+
+.ds-theme-mealtime,
+.ds-theme-garden,
+.ds-theme-berry {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.ds-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  min-height: 2.75rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 150ms ease, border-color 150ms ease, filter 150ms ease;
+}
+
+.ds-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ds-button-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  box-shadow: var(--shadow-card);
+}
+
+.ds-button-primary:hover {
+  filter: brightness(0.96);
+}
+
+.ds-button-secondary {
+  border-color: var(--border);
+  background: var(--card);
+  color: var(--foreground);
+}
+
+.ds-button-secondary:hover {
+  background: var(--secondary);
+}
+
+.ds-button-soft {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.ds-button-soft:hover {
+  background: var(--accent);
+}
+
+.ds-field,
+.ds-area {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  font: inherit;
+  outline: none;
+}
+
+.ds-field::placeholder,
+.ds-area::placeholder {
+  color: var(--muted-foreground);
+}
+
+.ds-field:focus-visible,
+.ds-area:focus-visible {
+  border-color: var(--ring);
+}
+
+.ds-field {
+  height: 3rem;
+  padding-inline: 1rem;
+  border-radius: var(--radius-pill);
+}
+
+.ds-field-icon {
+  padding-left: 2.5rem;
+  padding-right: 6.5rem;
+}
+
+.ds-field-compact {
+  width: 5rem;
+  height: 2.75rem;
+  padding-inline: 0.75rem;
+  text-align: center;
+}
+
+.ds-field-grow {
+  width: auto;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.ds-panel-wash {
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+  border-radius: var(--radius-card);
+  background: var(--secondary);
+  box-shadow: var(--shadow-card);
+}
+
+.ds-area {
+  min-height: 7rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-card);
+}
+
+.ds-area-muted {
+  background: color-mix(in srgb, var(--muted) 40%, var(--card));
+}
+
+.ds-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--card);
+  box-shadow: var(--shadow-card);
+}
+
+.ds-chip,
+.ds-chip-muted {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.ds-chip {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  font-weight: 600;
+}
+
+.ds-chip-muted {
+  background: var(--muted);
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.ds-mark {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.5rem;
+  padding-right: 0.25rem;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.ds-mark-icon {
+  display: flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-mark);
+  background: var(--forest);
+  color: #ffffff;
+}
+
+.ds-mark-word {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.ds-kicker {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.ds-display {
+  font-size: clamp(1.85rem, 4vw + 0.5rem, 3.15rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.ds-title {
+  font-size: clamp(1.75rem, 3vw + 1rem, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.ds-body {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.ds-swatch {
+  display: flex;
+  min-height: 5.5rem;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}

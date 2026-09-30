@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AppButton } from "@/components/app-button";
+import { fieldGrowClass } from "@/design-system";
 import { addIngredientsToGrocery } from "@/lib/grocery-store";
 import { ingredientCovered } from "@/lib/pantry-match";
 import { addPantryItem, removePantryItem, usePantry } from "@/lib/pantry-store";
@@ -12,9 +13,6 @@ import {
   type Recipe,
 } from "@/lib/recipes";
 import { useKeptRecipes } from "@/lib/use-kept-recipes";
-
-const fieldClass =
-  "h-12 min-w-0 flex-1 rounded-full border border-border bg-card px-4 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring";
 
 export function PantryBoard() {
   const pantry = usePantry();
@@ -55,7 +53,7 @@ export function PantryBoard() {
         </p>
       </div>
 
-      <section className="rounded-3xl border border-border bg-card shadow-mealtime p-4 sm:p-5">
+      <section className="ds-panel p-4 sm:p-5">
         <h2 className="font-heading text-xl">On hand</h2>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row">
           <input
@@ -69,7 +67,7 @@ export function PantryBoard() {
             }}
             placeholder="Yoghurt, tortillas, cheddar…"
             aria-label="Add a pantry ingredient"
-            className={fieldClass}
+            className={fieldGrowClass}
           />
           <AppButton type="button" onClick={addItem}>
             Add ingredient
@@ -118,7 +116,7 @@ export function PantryBoard() {
             <ul className="grid gap-4 lg:grid-cols-2">
               {matches.map((match) => (
                 <li key={match.recipe.slug}>
-                  <article className="flex h-full flex-col rounded-3xl border border-border bg-card shadow-mealtime p-4">
+                  <article className="flex h-full flex-col ds-panel p-4">
                     <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
                       {match.kind === "make" ? "Make this" : "Almost"}
                     </p>

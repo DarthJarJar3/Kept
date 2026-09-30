@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AppButton } from "@/components/app-button";
+import { fieldGrowClass } from "@/design-system";
 import {
   MEAL_SLOTS,
   PLAN_DAYS,
@@ -21,9 +22,6 @@ import {
   type Recipe,
 } from "@/lib/recipes";
 import { useKeptRecipes } from "@/lib/use-kept-recipes";
-
-const fieldClass =
-  "h-11 min-w-0 flex-1 rounded-full border border-border bg-card px-3 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring";
 
 const NOTE_PLACEHOLDERS: Record<MealSlot, string> = {
   breakfast: "Yoghurt, toast, an apple…",
@@ -53,7 +51,7 @@ export function PlanBoard({ addSlug }: { addSlug?: string }) {
       </div>
 
       {pending ? (
-        <section className="rounded-3xl border border-primary/15 bg-secondary shadow-mealtime p-4 sm:p-5">
+        <section className="ds-panel-wash p-4 sm:p-5">
           <p className="font-medium">Add {pending.title}</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Pick the meal, then the day.
@@ -96,7 +94,7 @@ export function PlanBoard({ addSlug }: { addSlug?: string }) {
       <ul className="grid gap-4 xl:grid-cols-2">
         {PLAN_DAYS.map((day) => (
           <li key={day}>
-            <article className="rounded-3xl border border-border bg-card shadow-mealtime p-4">
+            <article className="ds-panel p-4">
               <h2 className="font-heading text-2xl">{day}</h2>
               {MEAL_SLOTS.filter((item) => item !== "dessert").map((item) => (
                 <MealSlotEditor
@@ -181,7 +179,7 @@ function MealSlotEditor({
           }}
           placeholder={NOTE_PLACEHOLDERS[slot]}
           aria-label={`${SLOT_LABELS[slot]} note for ${day}`}
-          className={fieldClass}
+          className={fieldGrowClass}
         />
         <AppButton type="button" variant="secondary" onClick={addNote}>
           Add note

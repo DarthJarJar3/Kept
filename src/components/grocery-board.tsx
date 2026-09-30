@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AppButton } from "@/components/app-button";
+import { areaMutedClass } from "@/design-system";
 import {
   AISLES,
   clearCheckedGrocery,
@@ -58,7 +59,7 @@ export function GroceryBoard() {
       </div>
 
       {items.length > 0 ? (
-        <section className="rounded-3xl border border-border bg-card shadow-mealtime p-4">
+        <section className="ds-panel p-4">
           <h2 className="font-heading text-xl">Text to share</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Copy this into a message or your phone’s list. Checked items stay off it.
@@ -67,7 +68,7 @@ export function GroceryBoard() {
             readOnly
             value={listText}
             aria-label="Grocery list as text"
-            className="mt-3 min-h-40 w-full rounded-3xl border border-border bg-muted/40 px-4 py-3 text-sm"
+            className={`mt-3 min-h-40 ${areaMutedClass}`}
           />
         </section>
       ) : null}
@@ -90,7 +91,7 @@ export function GroceryBoard() {
               return null;
             }
             return (
-              <section key={aisle} className="rounded-3xl border border-border bg-card shadow-mealtime p-4">
+              <section key={aisle} className="ds-panel p-4">
                 <h2 className="font-heading text-xl">{aisle}</h2>
                 <ul className="mt-3 space-y-3">
                   {rows.map((item) => (

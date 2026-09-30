@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "../design-system/tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -50,43 +51,6 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-:root {
-  /* Mealtime recipe kit: cream paper, forest green, orange pills. */
-  --background: #fffaf5;
-  --foreground: #181818;
-  --card: #ffffff;
-  --card-foreground: #181818;
-  --popover: #ffffff;
-  --popover-foreground: #181818;
-  --primary: #f58701;
-  --primary-foreground: #ffffff;
-  --secondary: #fff1e0;
-  --secondary-foreground: #1c4c30;
-  --muted: #f6efe6;
-  --muted-foreground: #7a7066;
-  --accent: #fff1e0;
-  --accent-foreground: #1c4c30;
-  --destructive: #c44536;
-  --border: #efe4d6;
-  --input: #efe4d6;
-  --ring: #f58701;
-  --forest: #1c4c30;
-  --chart-1: #f58701;
-  --chart-2: #1c4c30;
-  --chart-3: #f6efe6;
-  --chart-4: #7a7066;
-  --chart-5: #181818;
-  --radius: 1.25rem;
-  --sidebar: #fffaf5;
-  --sidebar-foreground: #181818;
-  --sidebar-primary: #f58701;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fff1e0;
-  --sidebar-accent-foreground: #1c4c30;
-  --sidebar-border: #efe4d6;
-  --sidebar-ring: #f58701;
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -134,24 +98,4 @@
     overflow: visible;
     padding-bottom: 0;
   }
-}
-
-html[data-theme="sage"] {
-  --primary: #1c4c30;
-  --primary-foreground: #fffaf5;
-  --secondary: #e7f2ea;
-  --secondary-foreground: #1c4c30;
-  --accent: #e7f2ea;
-  --accent-foreground: #1c4c30;
-  --ring: #1c4c30;
-}
-
-html[data-theme="berry"] {
-  --primary: #c44536;
-  --primary-foreground: #fffaf5;
-  --secondary: #fdecea;
-  --secondary-foreground: #6d241c;
-  --accent: #fdecea;
-  --accent-foreground: #6d241c;
-  --ring: #c44536;
 }

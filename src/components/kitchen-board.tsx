@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Heart, Plus, Search } from "lucide-react";
 import { AppButton } from "@/components/app-button";
+import { chipClass, chipMutedClass, fieldIconClass } from "@/design-system";
 import { useKeptRecipes } from "@/lib/use-kept-recipes";
 import {
   allTags as seedTags,
@@ -71,7 +72,7 @@ export function KitchenBoard({
           defaultValue={query}
           placeholder="Search names, tags, or ingredients"
           aria-label="Search kept recipes"
-          className="h-12 w-full rounded-full border border-border bg-card pr-24 pl-10 text-base outline-none placeholder:text-muted-foreground focus-visible:border-ring"
+          className={fieldIconClass}
         />
         <AppButton type="submit" className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3">
           Find
@@ -180,7 +181,7 @@ function FilterGroup({
     <div
       role="group"
       aria-label={legend}
-      className="rounded-3xl border border-border bg-card p-4 shadow-mealtime"
+      className="ds-panel p-4"
     >
       <div className="mb-3">
         <p className="font-heading text-lg leading-none">{title}</p>
@@ -217,7 +218,7 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
   return (
     <Link
       href={`/recipe/${recipe.slug}`}
-      className="block h-full overflow-hidden rounded-3xl border border-border bg-card p-3 shadow-mealtime transition-transform hover:-translate-y-0.5"
+      className="block h-full overflow-hidden ds-panel p-3 transition-transform hover:-translate-y-0.5"
     >
       {recipe.photo ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -240,13 +241,11 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         </div>
         <p className="mt-1 text-sm text-muted-foreground">{recipe.whyKept}</p>
         <div className="mt-4 flex flex-wrap items-center gap-2">
-          <span className="inline-flex rounded-full bg-secondary px-2.5 py-1 text-xs font-semibold text-secondary-foreground">
-            {recipe.folder}
-          </span>
+          <span className={chipClass}>{recipe.folder}</span>
           {recipe.tags.map((item) => (
             <span
               key={item}
-              className="inline-flex rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground"
+              className={chipMutedClass}
             >
               {item}
             </span>
