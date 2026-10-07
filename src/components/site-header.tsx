@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AppButton } from "@/components/app-button";
 import { BrandMark } from "@/design-system";
 
@@ -15,14 +16,9 @@ type NavId =
   | "system";
 
 const links: { id: NavId; href: string; label: string }[] = [
-  { id: "home", href: "/", label: "Home" },
-  { id: "kitchen", href: "/kitchen", label: "My Kitchen" },
-  { id: "keep", href: "/keep", label: "Keep" },
-  { id: "plan", href: "/plan", label: "Plan" },
-  { id: "pantry", href: "/pantry", label: "Pantry" },
-  { id: "grocery", href: "/grocery", label: "List" },
-  { id: "profile", href: "/profile", label: "Profile" },
-  { id: "system", href: "/design-system", label: "System" },
+  { id: "kitchen", href: "/kitchen", label: "Recipes" },
+  { id: "keep", href: "/keep", label: "Add recipe" },
+  { id: "plan", href: "/plan", label: "Plan ahead" },
 ];
 
 export function SiteHeader({ current = "home" }: { current?: NavId }) {
@@ -32,7 +28,7 @@ export function SiteHeader({ current = "home" }: { current?: NavId }) {
     <header className="sticky top-0 z-20 border-b border-border bg-background/90 backdrop-blur">
       <div className="page-shell page-shell-wide py-3">
         <nav aria-label="Main" className="site-nav">
-          <BrandMark />
+          <BrandMark current={activeId === "home"} />
           {links.map((link) => (
             <AppButton
               key={link.id}
@@ -44,6 +40,17 @@ export function SiteHeader({ current = "home" }: { current?: NavId }) {
               {link.label}
             </AppButton>
           ))}
+          <Link
+            href="/profile"
+            aria-current={activeId === "profile" ? "page" : undefined}
+            className={`ml-auto shrink-0 px-2 text-sm underline-offset-4 ${
+              activeId === "profile"
+                ? "font-medium text-foreground underline"
+                : "text-muted-foreground"
+            }`}
+          >
+            Profile
+          </Link>
         </nav>
       </div>
     </header>

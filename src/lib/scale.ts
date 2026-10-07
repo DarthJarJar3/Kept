@@ -67,6 +67,25 @@ function formatNumber(value: number) {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
 }
 
+export function measureOf(amount: string): { value: number; unit: string } | null {
+  const parsed = parseLeadingNumber(amount);
+  if (!parsed) {
+    return null;
+  }
+  return { value: parsed.value, unit: parsed.rest.trim() };
+}
+
+export function formatMeasure(value: number, unit: string) {
+  const formatted = formatNumber(value);
+  if (!unit) {
+    return formatted;
+  }
+  if (unit.startsWith(",") || unit.startsWith(".")) {
+    return `${formatted}${unit}`;
+  }
+  return `${formatted} ${unit}`;
+}
+
 export function scaleAmount(amount: string, factor: number) {
   if (!Number.isFinite(factor) || Math.abs(factor - 1) < 0.001) {
     return amount;

@@ -206,6 +206,8 @@ export function openDessert(day: PlanDay) {
   updateDay(day, (current) => ({ ...current, dessertOpen: true }));
 }
 
+const serverPlan = emptyPlan();
+
 export function useWeekPlan(): WeekPlan {
-  return useSyncExternalStore(subscribePlan, readWeekPlan, emptyPlan);
+  return useSyncExternalStore(subscribePlan, readWeekPlan, () => serverPlan);
 }

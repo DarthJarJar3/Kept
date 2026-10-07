@@ -15,7 +15,7 @@ export default function NotFound() {
           or a link that never existed.
         </p>
         <div className="mt-6 flex flex-wrap gap-2">
-          <AppButton href="/kitchen">My Kitchen</AppButton>
+          <AppButton href="/kitchen">Recipes</AppButton>
           <AppButton href="/" variant="secondary">
             Home
           </AppButton>

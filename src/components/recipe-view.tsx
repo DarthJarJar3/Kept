@@ -105,7 +105,7 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
           {copied ? "Copied" : "Share"}
         </AppButton>
         <AppButton href={`/plan?add=${live.slug}`} variant="secondary">
-          Add to this week
+          Add to plan
         </AppButton>
         <AppButton
           variant="secondary"

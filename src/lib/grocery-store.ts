@@ -253,6 +253,8 @@ export function groceryAsText(items: GroceryItem[] = readGrocery()) {
     .trim();
 }
 
+const emptyGrocery: GroceryItem[] = [];
+
 export function useGrocery(): GroceryItem[] {
-  return useSyncExternalStore(subscribeGrocery, readGrocery, () => []);
+  return useSyncExternalStore(subscribeGrocery, readGrocery, () => emptyGrocery);
 }

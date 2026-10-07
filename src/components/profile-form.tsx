@@ -53,8 +53,9 @@ export function ProfileForm() {
       <div>
         <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Profile</h1>
         <p className="mt-2 text-muted-foreground">
-          A name and an accent. Mealtime is the orange from the recipe kit.
-          Garden and berry only change that accent.
+          Your name, the kitchen color, and the rest of your settings.
+          Mealtime is the orange from the recipe kit. Garden and berry only
+          change that accent.
         </p>
       </div>
 

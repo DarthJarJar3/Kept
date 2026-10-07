@@ -50,15 +50,15 @@ export function KitchenBoard({
     <div className="space-y-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">My Kitchen</h1>
+          <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Recipes</h1>
           <p className="mt-2 max-w-xl text-muted-foreground">
-            Find a recipe you already made work — by folder, tag, favorite, name,
-            or an ingredient.
+            Your catalogue. Find a recipe you already made work — by folder, tag,
+            favorite, name, or an ingredient — then open it to cook.
           </p>
         </div>
         <AppButton href="/keep" className="w-full sm:w-auto">
           <Plus className="size-4" />
-          Keep a recipe
+          Add a recipe
         </AppButton>
       </div>
 
@@ -71,7 +71,7 @@ export function KitchenBoard({
           name="q"
           defaultValue={query}
           placeholder="Search names, tags, or ingredients"
-          aria-label="Search kept recipes"
+          aria-label="Search your recipes"
           className={fieldIconClass}
         />
         <AppButton type="submit" className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3">
@@ -145,7 +145,7 @@ export function KitchenBoard({
 
       {visible.length === 0 ? (
         <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
-          <p className="font-medium">No kept recipes match that.</p>
+          <p className="font-medium">No recipes match that.</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Clear a folder or tag, or try a different name or ingredient.
           </p>

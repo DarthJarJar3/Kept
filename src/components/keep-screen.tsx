@@ -17,12 +17,12 @@ export function KeepScreen({ slug }: { slug?: string }) {
       <SiteHeader current="keep" />
       <PageShell>
         <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">
-          {initial ? "Edit this recipe" : "Keep a recipe"}
+          {initial ? "Edit this recipe" : "Add a recipe"}
         </h1>
         <p className="mt-2 max-w-xl text-muted-foreground">
           {initial
             ? "Change the amounts, notes, or photo — this stays the version you cook from."
-            : "Two ways in: bring one over from a link, or write the version you already make."}
+            : "Paste a link, or write the version you already make. It joins your catalogue."}
         </p>
         <div className="mt-8">
           <KeepRecipeForm

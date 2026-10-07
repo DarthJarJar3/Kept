@@ -23,7 +23,7 @@ export function DesignSystemCatalog() {
         <h1 className="ds-display mt-3">Mealtime</h1>
         <p className="ds-body mt-4">
           Cream paper, a forest-green mark, and orange pills. These are the
-          styles and components the rest of Kept uses.
+          styles and components the rest of Spoonful uses.
         </p>
       </header>
 

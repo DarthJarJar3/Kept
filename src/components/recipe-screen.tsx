@@ -28,7 +28,7 @@ export function RecipeScreen({
             browser.
           </p>
           <AppButton href="/kitchen" className="mt-4">
-            Back to My Kitchen
+            Back to Recipes
           </AppButton>
         </PageShell>
       </div>

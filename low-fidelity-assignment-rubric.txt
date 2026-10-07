@@ -1,0 +1,39 @@
+This is a group assignment. This will serve as the midterm evaluation for the course. All team members must be equally involved with this assignment. All team members must have at least one section of the app or website that they are responsible for.  Your team must use GitHub for version control so you can all work on the same project simultaneously. 
+
+For this assignment, use AI (I recommend Claude Design but any AI will do) to create and submit a link to a live, working, low-fidelity prototype for your project. This prototype should implement your root user outcomes and your design choices you identified in your discovery research.
+
+Your prototype should provide a natural and familiar feel for users. It should look low-fidelity from the user's perspective, and users should be explicitly made aware of this (in plain english) in a modal or another way. Your prototype should have enough screens that it feels like a fully functional app (e.g., 20-30+ screens). The users cannot be forced into a linear flow.
+
+Implement all usability principles we have discussed thus far in class. (It is a good idea to review the entire prototype with one principle in mind, then again for another principle, etc.) Do not forget to guide attention!
+
+In the comments or notes where you submit your public URL, also describe how your lo-fi prototype emphasizes the core design feature(s) identified by your discovery research and avoids or minimizes tangential functions.
+
+Make sure you submit the a public link! If we can't access it, we can't grade it, which means a zero.
+
+See the rubric below for grading criteria.
+
+Note: Think from the perspective of the user. Ask yourself what a brand new user would think/do when presented with your application/website.
+
+Rubric
+Low-Fidelity Prototype Rubric
+Low-Fidelity Prototype Rubric
+Criteria	Ratings	Pts
+This criterion is linked to a Learning OutcomeInstructions followed
+All instructions are followed.
+20 pts
+This criterion is linked to a Learning OutcomeLow-fidelity look and early-stage notice
+The prototype looks low fidelity from the perspective of the user, and the user is explicitly told the prototype is in early stages (e.g. with a modal).
+20 pts
+This criterion is linked to a Learning OutcomeEntry screens signify overarching capability
+For any screen where a user might first enter the solution (e.g., when they first open the app or first encounter the website), the overarching capability of the solution is the first and most prominent thing signified. Other top-level functions are signified in a manner consistent with signifying principles taught in class.
+40 pts
+This criterion is linked to a Learning OutcomeConventions, attention, grouping, and usability principles
+The design follows conventions internally and externally, effectively guides user attention, uses effective grouping, and generally implements all usability principles covered in class thus far.
+40 pts
+This criterion is linked to a Learning OutcomeDesign library and component reuse
+The design uses a design library, reusing components rather than building everything piecemeal. The design library seems to match the affordances and root user outcomes identified in discovery research.
+40 pts
+This criterion is linked to a Learning OutcomeFully functional, non-linear, goal-driven
+The website or app is fully functional, except for any core backend features that cannot be readily vibe-coded. There should NOT be one single path for the user to follow. The user should have a goal in mind (a goal should be given to them up front in a modal or in instructions), but there should be multiple possible routes for the user to take. If onboarding is used, the user is able to skip it.
+40 pts
+Total Points: 200

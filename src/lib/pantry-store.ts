@@ -121,6 +121,8 @@ export function removePantryItem(id: string) {
   savePantry(readPantry().filter((item) => item.id !== id));
 }
 
+const serverPantry = starterItems();
+
 export function usePantry(): PantryItem[] {
-  return useSyncExternalStore(subscribePantry, readPantry, starterItems);
+  return useSyncExternalStore(subscribePantry, readPantry, () => serverPantry);
 }

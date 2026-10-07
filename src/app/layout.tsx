@@ -10,9 +10,9 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Kept — keep the recipe you actually make",
+  title: "Spoonful — your recipes, the way you make them",
   description:
-    "Save recipes the way you cook them, then find them again by folder or tag.",
+    "Keep a personal recipe catalogue, cook from it, and plan how much of each ingredient you need.",
 };
 
 export default function RootLayout({
