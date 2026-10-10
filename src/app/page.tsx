@@ -24,7 +24,7 @@ export default function HomePage() {
           <p className="landing-brand">Spoonful</p>
           <HomeGreeting />
           <h1 className="mt-4 text-[clamp(1.6rem,3.2vw+0.5rem,2.4rem)] leading-[1.15] text-balance">
-            Cook from a recipe you saved.
+            Your recipes, your way
           </h1>
           <p className="landing-lede mt-4 max-w-md text-lg leading-relaxed">
             Find it in your list, or add one you want to keep.

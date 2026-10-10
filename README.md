@@ -43,7 +43,7 @@ Planning sits beside the catalogue. You choose a range of days, the recipes you 
 
 **Need.** After cooking from a blog, a pin, or a screenshot, that same cook cannot find the version that already worked without hunting bookmarks, photos, and search history. Once she is in the recipe, a long page makes it hard to tell which ingredients are out and which step she is on.
 
-**Affordance sentence** on the current landing screen: Cook from a recipe you saved.
+**Affordance sentence** on the current landing screen: Your recipes, your way.
 
 ---
 
