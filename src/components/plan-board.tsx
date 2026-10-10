@@ -9,6 +9,7 @@ import {
   SLOT_LABELS,
   addPlanNote,
   addPlanRecipe,
+  clearDessert,
   openDessert,
   removePlanEntry,
   useWeekPlan,
@@ -319,6 +320,8 @@ export function PlanBoard({ addSlug }: { addSlug?: string }) {
                   slot="dessert"
                   entries={plan[day].dessert}
                   recipes={recipes}
+                  onClearSlot={() => clearDessert(day)}
+                  clearLabel="Remove dessert"
                 />
               ) : (
                 <div className="mt-4">
@@ -344,11 +347,15 @@ function MealSlotEditor({
   slot,
   entries,
   recipes,
+  onClearSlot,
+  clearLabel,
 }: {
   day: PlanDay;
   slot: MealSlot;
   entries: MealEntry[];
   recipes: Recipe[];
+  onClearSlot?: () => void;
+  clearLabel?: string;
 }) {
   const [draft, setDraft] = useState("");
 
@@ -359,7 +366,19 @@ function MealSlotEditor({
 
   return (
     <section className="mt-4 border-t border-border pt-4">
-      <h3 className="font-heading text-lg">{SLOT_LABELS[slot]}</h3>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="font-heading text-lg">{SLOT_LABELS[slot]}</h3>
+        {onClearSlot && clearLabel ? (
+          <AppButton
+            type="button"
+            variant="secondary"
+            onClick={onClearSlot}
+            aria-label={`${clearLabel} for ${day}`}
+          >
+            {clearLabel}
+          </AppButton>
+        ) : null}
+      </div>
       {entries.length === 0 ? (
         <p className="mt-2 text-sm text-muted-foreground">Nothing here yet.</p>
       ) : (

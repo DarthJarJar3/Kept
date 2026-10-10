@@ -247,6 +247,14 @@ export function openDessert(day: PlanDay) {
   updateDay(day, (current) => ({ ...current, dessertOpen: true }));
 }
 
+export function clearDessert(day: PlanDay) {
+  updateDay(day, (current) => ({
+    ...current,
+    dessert: [],
+    dessertOpen: false,
+  }));
+}
+
 const serverPlan = emptyPlan();
 
 export function useWeekPlan(): WeekPlan {
