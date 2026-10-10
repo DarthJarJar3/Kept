@@ -5,14 +5,14 @@ import { Field, TextArea } from "@/design-system/components/field";
 import { Panel } from "@/design-system/components/panel";
 
 const swatches = [
+  ["Cream", "var(--cream)", "var(--foreground)"],
+  ["Coral", "var(--coral)", "#ffffff"],
+  ["Coral mid", "var(--coral-mid)", "#ffffff"],
+  ["Coral soft", "var(--coral-soft)", "var(--foreground)"],
   ["Paper", "var(--background)", "var(--foreground)"],
-  ["Ink", "var(--foreground)", "#fffaf5"],
+  ["Ink", "var(--foreground)", "var(--cream)"],
   ["Card", "var(--card)", "var(--foreground)"],
-  ["Orange", "var(--primary)", "var(--primary-foreground)"],
-  ["Forest", "var(--forest)", "#ffffff"],
-  ["Wash", "var(--secondary)", "var(--secondary-foreground)"],
   ["Muted", "var(--muted)", "var(--foreground)"],
-  ["Line", "var(--border)", "var(--foreground)"],
 ] as const;
 
 export function DesignSystemCatalog() {
@@ -20,9 +20,9 @@ export function DesignSystemCatalog() {
     <div className="space-y-12">
       <header className="max-w-2xl">
         <p className="ds-kicker">Design system</p>
-        <h1 className="ds-display mt-3">Mealtime</h1>
+        <h1 className="ds-display mt-3">Spoonful coral</h1>
         <p className="ds-body mt-4">
-          Cream paper, a forest-green mark, and orange pills. These are the
+          Warm cream paper, coral reds, and soft pink washes. These are the
           styles and components the rest of Spoonful uses.
         </p>
       </header>
@@ -49,7 +49,7 @@ export function DesignSystemCatalog() {
           <p className="ds-display">Keep the recipe you make.</p>
           <p className="ds-title">Weeknight lemon chicken</p>
           <p className="ds-body">
-            Body copy stays warm gray so the title and the orange action can
+            Body copy stays warm gray so the title and the coral action can
             carry the screen.
           </p>
         </Panel>

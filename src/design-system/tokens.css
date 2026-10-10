@@ -1,47 +1,52 @@
 /*
-  Mealtime recipe kit.
-  Cream paper, forest green, orange pills, soft white cards.
+  Spoonful coral kit.
+  Coral reds, soft pink, warm cream paper.
   Screens read these variables. Do not hard-code a second palette.
 */
 
 :root {
-  --background: #fffaf5;
-  --foreground: #181818;
-  --card: #ffffff;
-  --card-foreground: #181818;
-  --popover: #ffffff;
-  --popover-foreground: #181818;
-  --primary: #f58701;
+  --coral: #eb4c4c;
+  --coral-mid: #ff7070;
+  --coral-soft: #ffa6a6;
+  --cream: #ffedc7;
+
+  --background: #ffedc7;
+  --foreground: #2a1717;
+  --card: #fff8ef;
+  --card-foreground: #2a1717;
+  --popover: #fff8ef;
+  --popover-foreground: #2a1717;
+  --primary: #eb4c4c;
   --primary-foreground: #ffffff;
-  --secondary: #fff1e0;
-  --secondary-foreground: #1c4c30;
-  --muted: #f6efe6;
-  --muted-foreground: #7a7066;
-  --accent: #fff1e0;
-  --accent-foreground: #1c4c30;
+  --secondary: #ffa6a6;
+  --secondary-foreground: #2a1717;
+  --muted: #ffe3b0;
+  --muted-foreground: #7a4f4f;
+  --accent: #ff7070;
+  --accent-foreground: #ffffff;
   --destructive: #c44536;
-  --border: #efe4d6;
-  --input: #efe4d6;
-  --ring: #f58701;
-  --forest: #1c4c30;
-  --chart-1: #f58701;
-  --chart-2: #1c4c30;
-  --chart-3: #f6efe6;
-  --chart-4: #7a7066;
-  --chart-5: #181818;
+  --border: #f0c9a0;
+  --input: #f0c9a0;
+  --ring: #eb4c4c;
+  --forest: #eb4c4c;
+  --chart-1: #eb4c4c;
+  --chart-2: #ff7070;
+  --chart-3: #ffa6a6;
+  --chart-4: #ffedc7;
+  --chart-5: #2a1717;
   --radius: 1.25rem;
   --radius-pill: 999px;
   --radius-card: 1.5rem;
   --radius-mark: 0.75rem;
-  --shadow-card: 0 18px 40px -28px rgb(24 24 24 / 0.55);
-  --sidebar: #fffaf5;
-  --sidebar-foreground: #181818;
-  --sidebar-primary: #f58701;
+  --shadow-card: 0 18px 40px -28px rgb(42 23 23 / 0.45);
+  --sidebar: #ffedc7;
+  --sidebar-foreground: #2a1717;
+  --sidebar-primary: #eb4c4c;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fff1e0;
-  --sidebar-accent-foreground: #1c4c30;
-  --sidebar-border: #efe4d6;
-  --sidebar-ring: #f58701;
+  --sidebar-accent: #ffa6a6;
+  --sidebar-accent-foreground: #2a1717;
+  --sidebar-border: #f0c9a0;
+  --sidebar-ring: #eb4c4c;
 }
 
 html[data-theme="sage"],
@@ -53,17 +58,19 @@ html[data-theme="sage"],
   --accent: #e7f2ea;
   --accent-foreground: #1c4c30;
   --ring: #1c4c30;
+  --forest: #1c4c30;
 }
 
 html[data-theme="berry"],
 .ds-theme-berry {
-  --primary: #c44536;
-  --primary-foreground: #fffaf5;
-  --secondary: #fdecea;
+  --primary: #eb4c4c;
+  --primary-foreground: #ffffff;
+  --secondary: #ffa6a6;
   --secondary-foreground: #6d241c;
-  --accent: #fdecea;
-  --accent-foreground: #6d241c;
-  --ring: #c44536;
+  --accent: #ff7070;
+  --accent-foreground: #ffffff;
+  --ring: #eb4c4c;
+  --forest: #eb4c4c;
 }
 
 .ds-theme-mealtime,
@@ -115,16 +122,16 @@ html[data-theme="berry"],
 }
 
 .ds-button-secondary:hover {
-  background: var(--secondary);
+  background: color-mix(in srgb, var(--cream) 70%, var(--card));
 }
 
 .ds-button-soft {
-  background: var(--secondary);
-  color: var(--secondary-foreground);
+  background: color-mix(in srgb, var(--coral-soft) 55%, var(--cream));
+  color: var(--foreground);
 }
 
 .ds-button-soft:hover {
-  background: var(--accent);
+  background: color-mix(in srgb, var(--coral-mid) 40%, var(--cream));
 }
 
 .ds-field,
@@ -174,7 +181,7 @@ html[data-theme="berry"],
 .ds-panel-wash {
   border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
   border-radius: var(--radius-card);
-  background: var(--secondary);
+  background: color-mix(in srgb, var(--coral-soft) 35%, var(--cream));
   box-shadow: var(--shadow-card);
 }
 
@@ -206,8 +213,8 @@ html[data-theme="berry"],
 }
 
 .ds-chip {
-  background: var(--secondary);
-  color: var(--secondary-foreground);
+  background: color-mix(in srgb, var(--coral-soft) 55%, var(--cream));
+  color: var(--foreground);
   font-weight: 600;
 }
 
@@ -234,7 +241,7 @@ html[data-theme="berry"],
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-mark);
-  background: var(--forest);
+  background: var(--primary);
   color: #ffffff;
 }
 

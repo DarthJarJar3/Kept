@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { cn } from "@/lib/utils";
 
 function subscribeProfile(onStoreChange: () => void) {
   window.addEventListener("storage", onStoreChange);
@@ -15,13 +16,18 @@ function readName() {
   return window.localStorage.getItem("kept-name") ?? "";
 }
 
-export function HomeGreeting() {
+export function HomeGreeting({ className }: { className?: string }) {
   const name = useSyncExternalStore(subscribeProfile, readName, () => "");
   if (!name) {
     return null;
   }
   return (
-    <p className="mb-3 text-sm font-medium tracking-wide text-muted-foreground uppercase">
+    <p
+      className={cn(
+        "mb-3 text-sm font-medium tracking-wide text-muted-foreground uppercase",
+        className,
+      )}
+    >
       {name}&apos;s kitchen
     </p>
   );
