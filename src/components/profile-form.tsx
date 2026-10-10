@@ -54,7 +54,7 @@ export function ProfileForm() {
         <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Profile</h1>
         <p className="mt-2 text-muted-foreground">
           Your name, the kitchen color, and the rest of your settings.
-          Mealtime is the orange from the recipe kit. Garden and berry only
+          Coral is the default from the recipe kit. Rose and berry only
           change that accent.
         </p>
       </div>
@@ -75,7 +75,7 @@ export function ProfileForm() {
       <fieldset>
         <legend className="mb-2 text-sm font-medium">Kitchen color</legend>
         <p className="mb-3 text-sm text-muted-foreground">
-          Mealtime orange is the default. Garden and berry keep the same cream paper.
+          Coral is the default. Rose and berry keep the same cream paper.
         </p>
         <div className="flex flex-wrap gap-2">
           {themes.map((item) => (

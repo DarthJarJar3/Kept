@@ -1,69 +1,76 @@
 /*
-  Mealtime recipe kit.
-  Cream paper, forest green, orange pills, soft white cards.
+  Spoonful recipe kit.
+  Cream paper, coral accents, soft blush washes, white cards.
   Screens read these variables. Do not hard-code a second palette.
 */
 
 :root {
-  --background: #fffaf5;
-  --foreground: #181818;
-  --card: #ffffff;
-  --card-foreground: #181818;
-  --popover: #ffffff;
-  --popover-foreground: #181818;
-  --primary: #f58701;
+  --spoonful-coral: #eb4c4c;
+  --spoonful-rose: #ff7070;
+  --spoonful-blush: #ffa6a6;
+  --spoonful-cream: #ffedc7;
+
+  --background: var(--spoonful-cream);
+  --foreground: #2a1818;
+  --card: #fff8ec;
+  --card-foreground: #2a1818;
+  --popover: #fff8ec;
+  --popover-foreground: #2a1818;
+  --primary: var(--spoonful-coral);
   --primary-foreground: #ffffff;
-  --secondary: #fff1e0;
-  --secondary-foreground: #1c4c30;
-  --muted: #f6efe6;
-  --muted-foreground: #7a7066;
-  --accent: #fff1e0;
-  --accent-foreground: #1c4c30;
-  --destructive: #c44536;
-  --border: #efe4d6;
-  --input: #efe4d6;
-  --ring: #f58701;
-  --forest: #1c4c30;
-  --chart-1: #f58701;
-  --chart-2: #1c4c30;
-  --chart-3: #f6efe6;
-  --chart-4: #7a7066;
-  --chart-5: #181818;
+  --secondary: color-mix(in srgb, var(--spoonful-blush) 42%, white);
+  --secondary-foreground: #5c2222;
+  --muted: color-mix(in srgb, var(--spoonful-blush) 28%, var(--spoonful-cream));
+  --muted-foreground: #7a5550;
+  --accent: var(--spoonful-rose);
+  --accent-foreground: #ffffff;
+  --destructive: #c23a3a;
+  --border: color-mix(in srgb, var(--spoonful-blush) 48%, var(--spoonful-cream));
+  --input: color-mix(in srgb, var(--spoonful-blush) 40%, white);
+  --ring: var(--spoonful-coral);
+  --forest: var(--spoonful-coral);
+  --chart-1: var(--spoonful-coral);
+  --chart-2: var(--spoonful-rose);
+  --chart-3: var(--spoonful-blush);
+  --chart-4: var(--spoonful-cream);
+  --chart-5: #2a1818;
   --radius: 1.25rem;
   --radius-pill: 999px;
   --radius-card: 1.5rem;
   --radius-mark: 0.75rem;
-  --shadow-card: 0 18px 40px -28px rgb(24 24 24 / 0.55);
-  --sidebar: #fffaf5;
-  --sidebar-foreground: #181818;
-  --sidebar-primary: #f58701;
+  --shadow-card: 0 18px 40px -28px rgb(42 24 24 / 0.45);
+  --sidebar: var(--spoonful-cream);
+  --sidebar-foreground: #2a1818;
+  --sidebar-primary: var(--spoonful-coral);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fff1e0;
-  --sidebar-accent-foreground: #1c4c30;
-  --sidebar-border: #efe4d6;
-  --sidebar-ring: #f58701;
+  --sidebar-accent: color-mix(in srgb, var(--spoonful-blush) 42%, white);
+  --sidebar-accent-foreground: #5c2222;
+  --sidebar-border: color-mix(in srgb, var(--spoonful-blush) 48%, var(--spoonful-cream));
+  --sidebar-ring: var(--spoonful-coral);
 }
 
 html[data-theme="sage"],
 .ds-theme-garden {
-  --primary: #1c4c30;
-  --primary-foreground: #fffaf5;
-  --secondary: #e7f2ea;
-  --secondary-foreground: #1c4c30;
-  --accent: #e7f2ea;
-  --accent-foreground: #1c4c30;
-  --ring: #1c4c30;
+  --primary: var(--spoonful-rose);
+  --primary-foreground: #ffffff;
+  --secondary: color-mix(in srgb, var(--spoonful-blush) 55%, white);
+  --secondary-foreground: #5c2222;
+  --accent: var(--spoonful-blush);
+  --accent-foreground: #5c2222;
+  --ring: var(--spoonful-rose);
+  --forest: var(--spoonful-rose);
 }
 
 html[data-theme="berry"],
 .ds-theme-berry {
-  --primary: #c44536;
-  --primary-foreground: #fffaf5;
-  --secondary: #fdecea;
-  --secondary-foreground: #6d241c;
-  --accent: #fdecea;
-  --accent-foreground: #6d241c;
-  --ring: #c44536;
+  --primary: #c23a3a;
+  --primary-foreground: #fff8ec;
+  --secondary: color-mix(in srgb, var(--spoonful-blush) 65%, white);
+  --secondary-foreground: #5c1a1a;
+  --accent: color-mix(in srgb, var(--spoonful-blush) 65%, white);
+  --accent-foreground: #5c1a1a;
+  --ring: #c23a3a;
+  --forest: #c23a3a;
 }
 
 .ds-theme-mealtime,
@@ -124,7 +131,7 @@ html[data-theme="berry"],
 }
 
 .ds-button-soft:hover {
-  background: var(--accent);
+  background: color-mix(in srgb, var(--spoonful-blush) 55%, white);
 }
 
 .ds-field,
@@ -283,4 +290,175 @@ html[data-theme="berry"],
   padding: 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+.landing-hero {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: calc(100dvh - 4.5rem);
+  align-items: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.landing-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  animation: landing-media-in 1.1s ease-out both;
+}
+
+.landing-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--spoonful-cream) 18%, transparent) 0%,
+      color-mix(in srgb, var(--spoonful-coral) 28%, transparent) 42%,
+      color-mix(in srgb, #2a1818 72%, var(--spoonful-coral)) 100%
+    );
+}
+
+.landing-hero-content {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 88rem);
+  margin-inline: auto;
+  padding: clamp(1.5rem, 5vw, 3.5rem) clamp(1rem, 4.5vw, 2.75rem)
+    clamp(2rem, 6vw, 4rem);
+  max-width: 40rem;
+  margin-left: clamp(0rem, 4vw, 2rem);
+  color: #fff8ec;
+  animation: landing-copy-in 0.7s ease-out 0.12s both;
+}
+
+.landing-brand {
+  margin: 0;
+  font-size: clamp(2.6rem, 7vw + 0.5rem, 4.75rem);
+  font-weight: 700;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+  text-shadow: 0 10px 36px rgb(42 24 24 / 0.35);
+}
+
+.landing-hero-content .landing-greeting {
+  color: color-mix(in srgb, #fff8ec 78%, var(--spoonful-blush));
+}
+
+.landing-hero-content h1 {
+  color: #fff8ec;
+  text-shadow: 0 8px 28px rgb(42 24 24 / 0.3);
+}
+
+.landing-hero-content .landing-lede {
+  color: color-mix(in srgb, #fff8ec 86%, var(--spoonful-cream));
+}
+
+.landing-hero-content .ds-button-secondary {
+  border-color: color-mix(in srgb, #fff8ec 45%, transparent);
+  background: color-mix(in srgb, #2a1818 35%, transparent);
+  color: #fff8ec;
+  backdrop-filter: blur(6px);
+}
+
+.landing-hero-content .ds-button-secondary:hover {
+  background: color-mix(in srgb, #2a1818 55%, transparent);
+}
+
+.early-prototype-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: color-mix(in srgb, #2a1818 48%, transparent);
+  backdrop-filter: blur(4px);
+  animation: modal-backdrop-in 220ms ease-out both;
+}
+
+.early-prototype-dialog {
+  width: min(100%, 26rem);
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: var(--shadow-card);
+  animation: modal-panel-in 280ms ease-out both;
+}
+
+.early-prototype-dialog h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+
+.early-prototype-dialog p {
+  margin: 0.75rem 0 0;
+  color: var(--muted-foreground);
+  line-height: 1.55;
+}
+
+.early-prototype-dialog .early-prototype-actions {
+  margin-top: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@keyframes landing-media-in {
+  from {
+    transform: scale(1.06);
+    opacity: 0.7;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes landing-copy-in {
+  from {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-panel-in {
+  from {
+    transform: translateY(0.6rem) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero-media,
+  .landing-hero-content,
+  .early-prototype-backdrop,
+  .early-prototype-dialog {
+    animation: none;
+  }
 }

@@ -1,5 +1,9 @@
 import Link from "next/link";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import {
+  type ButtonHTMLAttributes,
+  type ReactNode,
+  forwardRef,
+} from "react";
 import { cn } from "@/lib/utils";
 
 const variants = {
@@ -18,29 +22,34 @@ type ButtonProps = {
   "aria-current"?: "page" | "true" | boolean;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
-export function Button({
-  href,
-  variant = "primary",
-  className,
-  children,
-  type = "button",
-  ...props
-}: ButtonProps) {
-  const classes = cn(variants[variant], className);
-  if (href) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  function Button(
+    {
+      href,
+      variant = "primary",
+      className,
+      children,
+      type = "button",
+      ...props
+    },
+    ref
+  ) {
+    const classes = cn(variants[variant], className);
+    if (href) {
+      return (
+        <Link
+          href={href}
+          className={classes}
+          aria-current={props["aria-current"]}
+        >
+          {children}
+        </Link>
+      );
+    }
     return (
-      <Link
-        href={href}
-        className={classes}
-        aria-current={props["aria-current"]}
-      >
+      <button ref={ref} type={type} className={classes} {...props}>
         {children}
-      </Link>
+      </button>
     );
   }
-  return (
-    <button type={type} className={classes} {...props}>
-      {children}
-    </button>
-  );
-}
+);
