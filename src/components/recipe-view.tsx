@@ -92,7 +92,7 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
       </div>
 
       <div className="mt-5 flex flex-wrap gap-2">
-        <AppButton href={`/recipe/${live.slug}/cook`}>
+        <AppButton href={`/recipe/${live.slug}/cook?serves=${serves}`}>
           <ChefHat className="size-4" />
           Make this recipe
         </AppButton>

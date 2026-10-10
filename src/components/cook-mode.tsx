@@ -9,11 +9,36 @@ import {
   recipes as seedRecipes,
   type Recipe,
 } from "@/lib/recipes";
+import { parseServes, scaleAmount } from "@/lib/scale";
 
-export function CookMode({ recipe }: { recipe: Recipe }) {
+function resolveServes(requested: number | null | undefined, baseServes: number) {
+  if (
+    typeof requested === "number" &&
+    Number.isFinite(requested) &&
+    requested >= 1
+  ) {
+    return Math.min(24, Math.round(requested));
+  }
+  return baseServes;
+}
+
+export function CookMode({
+  recipe,
+  serves: servesProp = null,
+}: {
+  recipe: Recipe;
+  serves?: number | null;
+}) {
   const kept = useKeptRecipes();
   const catalog = mergeRecipeLists(kept, seedRecipes);
   const live = catalog.find((item) => item.slug === recipe.slug) ?? recipe;
+  const baseServes = parseServes(live.servings);
+  const serves = resolveServes(servesProp, baseServes);
+  const factor = serves / baseServes;
+  const scaledIngredients = live.ingredients.map((item) => ({
+    ...item,
+    kept: scaleAmount(item.kept, factor),
+  }));
   const steps = live.steps;
   const total = steps.length;
   const [index, setIndex] = useState(0);
@@ -23,42 +48,45 @@ export function CookMode({ recipe }: { recipe: Recipe }) {
   const progress = hasSteps ? ((safeIndex + 1) / total) * 100 : 0;
   const isFirst = safeIndex <= 0;
   const isLast = hasSteps && safeIndex >= total - 1;
+  const recipeHref = `/recipe/${live.slug}`;
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <AppButton href={`/recipe/${live.slug}`} variant="secondary">
-            <ArrowLeft className="size-4" />
-            Back to recipe
-          </AppButton>
-          <p className="text-sm text-muted-foreground">
-            {hasSteps ? (
-              <>
-                Step {safeIndex + 1} of {total}
-              </>
-            ) : (
-              <>No steps yet</>
-            )}
-          </p>
-        </div>
+      <div className="sticky top-[4.5rem] z-10 -mx-[clamp(1rem,4.5vw,2.75rem)] border-b border-border bg-background/95 px-[clamp(1rem,4.5vw,2.75rem)] py-3 backdrop-blur">
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <AppButton href={recipeHref} variant="secondary">
+              <ArrowLeft className="size-4" />
+              Back to recipe
+            </AppButton>
+            <p className="text-sm text-muted-foreground">
+              {hasSteps ? (
+                <>
+                  Step {safeIndex + 1} of {total}
+                </>
+              ) : (
+                <>No steps yet</>
+              )}
+            </p>
+          </div>
 
-        <div
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={hasSteps ? total : 1}
-          aria-valuenow={hasSteps ? safeIndex + 1 : 0}
-          aria-label={
-            hasSteps
-              ? `Cooking progress: step ${safeIndex + 1} of ${total}`
-              : "Cooking progress: no steps"
-          }
-          className="h-2.5 overflow-hidden rounded-full bg-secondary"
-        >
           <div
-            className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={hasSteps ? total : 1}
+            aria-valuenow={hasSteps ? safeIndex + 1 : 0}
+            aria-label={
+              hasSteps
+                ? `Cooking progress: step ${safeIndex + 1} of ${total}`
+                : "Cooking progress: no steps"
+            }
+            className="h-2.5 overflow-hidden rounded-full bg-secondary"
+          >
+            <div
+              className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
         </div>
       </div>
 
@@ -71,24 +99,25 @@ export function CookMode({ recipe }: { recipe: Recipe }) {
           <h1 className="ds-title">{live.title}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {live.time}
-            {live.servings ? ` · ${live.servings}` : ""}
+            {` · amounts for ${serves} ${serves === 1 ? "person" : "people"}`}
           </p>
         </div>
       </header>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(16rem,22rem)_minmax(0,1fr)] lg:items-start">
-        <aside className="ds-panel p-5 lg:sticky lg:top-24">
+        <aside className="ds-panel p-5 lg:sticky lg:top-40">
           <h2 className="text-xl">Ingredients</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Keep this list visible while you cook.
+            Amounts for {serves} {serves === 1 ? "person" : "people"}. Keep this
+            list visible while you cook.
           </p>
-          {live.ingredients.length === 0 ? (
+          {scaledIngredients.length === 0 ? (
             <p className="mt-4 text-sm text-muted-foreground">
               No ingredients listed for this recipe.
             </p>
           ) : (
             <ul className="mt-4 divide-y divide-border">
-              {live.ingredients.map((item) => (
+              {scaledIngredients.map((item) => (
                 <li key={`${item.name}-${item.kept}`} className="py-2.5">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <span className="font-medium">{item.name}</span>
@@ -143,7 +172,7 @@ export function CookMode({ recipe }: { recipe: Recipe }) {
             </AppButton>
 
             {hasSteps && isLast ? (
-              <AppButton href={`/recipe/${live.slug}`}>
+              <AppButton href={recipeHref}>
                 <Check className="size-4" />
                 Done
               </AppButton>
