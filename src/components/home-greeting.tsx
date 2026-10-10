@@ -21,7 +21,7 @@ export function HomeGreeting() {
     return null;
   }
   return (
-    <p className="mb-3 text-sm font-medium tracking-wide text-muted-foreground uppercase">
+    <p className="landing-greeting mt-4 text-sm font-medium tracking-wide uppercase">
       {name}&apos;s kitchen
     </p>
   );

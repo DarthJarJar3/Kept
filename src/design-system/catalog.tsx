@@ -5,13 +5,13 @@ import { Field, TextArea } from "@/design-system/components/field";
 import { Panel } from "@/design-system/components/panel";
 
 const swatches = [
-  ["Paper", "var(--background)", "var(--foreground)"],
-  ["Ink", "var(--foreground)", "#fffaf5"],
+  ["Cream", "var(--spoonful-cream)", "var(--foreground)"],
+  ["Coral", "var(--spoonful-coral)", "#ffffff"],
+  ["Rose", "var(--spoonful-rose)", "#ffffff"],
+  ["Blush", "var(--spoonful-blush)", "#5c2222"],
+  ["Ink", "var(--foreground)", "var(--spoonful-cream)"],
   ["Card", "var(--card)", "var(--foreground)"],
-  ["Orange", "var(--primary)", "var(--primary-foreground)"],
-  ["Forest", "var(--forest)", "#ffffff"],
   ["Wash", "var(--secondary)", "var(--secondary-foreground)"],
-  ["Muted", "var(--muted)", "var(--foreground)"],
   ["Line", "var(--border)", "var(--foreground)"],
 ] as const;
 
@@ -20,9 +20,9 @@ export function DesignSystemCatalog() {
     <div className="space-y-12">
       <header className="max-w-2xl">
         <p className="ds-kicker">Design system</p>
-        <h1 className="ds-display mt-3">Mealtime</h1>
+        <h1 className="ds-display mt-3">Spoonful</h1>
         <p className="ds-body mt-4">
-          Cream paper, a forest-green mark, and orange pills. These are the
+          Cream paper, a coral spoon mark, and blush washes. These are the
           styles and components the rest of Spoonful uses.
         </p>
       </header>
@@ -49,7 +49,7 @@ export function DesignSystemCatalog() {
           <p className="ds-display">Keep the recipe you make.</p>
           <p className="ds-title">Weeknight lemon chicken</p>
           <p className="ds-body">
-            Body copy stays warm gray so the title and the orange action can
+            Body copy stays warm gray so the title and the coral action can
             carry the screen.
           </p>
         </Panel>
@@ -98,12 +98,12 @@ export function DesignSystemCatalog() {
       <section>
         <h2 className="ds-title">Accents</h2>
         <p className="ds-body mt-2">
-          Garden and Berry only change the accent. Paper, type, and shape stay
+          Rose and Berry only change the accent. Paper, type, and shape stay
           the same.
         </p>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          <AccentPreview title="Mealtime" className="ds-theme-mealtime" />
-          <AccentPreview title="Garden" className="ds-theme-garden" />
+          <AccentPreview title="Coral" className="ds-theme-mealtime" />
+          <AccentPreview title="Rose" className="ds-theme-garden" />
           <AccentPreview title="Berry" className="ds-theme-berry" />
         </div>
       </section>

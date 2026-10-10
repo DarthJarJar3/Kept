@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Carrot } from "lucide-react";
+import { SpoonIcon } from "@/design-system/components/spoon-icon";
 
 export function BrandMark({
   href = "/",
@@ -16,7 +16,7 @@ export function BrandMark({
       className="ds-mark"
     >
       <span className="ds-mark-icon">
-        <Carrot className="size-5" />
+        <SpoonIcon className="size-5" />
       </span>
       <span className="ds-mark-word">Spoonful</span>
     </Link>

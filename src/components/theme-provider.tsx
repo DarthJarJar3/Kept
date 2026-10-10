@@ -3,8 +3,8 @@
 import { type ReactNode, useEffect } from "react";
 
 export const themes = [
-  { id: "peach", label: "Mealtime" },
-  { id: "sage", label: "Garden" },
+  { id: "peach", label: "Coral" },
+  { id: "sage", label: "Rose" },
   { id: "berry", label: "Berry" },
 ] as const;
 
