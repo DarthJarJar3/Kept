@@ -3,9 +3,24 @@ import { getRecipe } from "@/lib/recipes";
 
 type CookPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ serves?: string }>;
 };
 
-export default async function CookPage({ params }: CookPageProps) {
+function parseServesParam(value: string | undefined) {
+  if (!value) return null;
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 1) return null;
+  return Math.min(24, Math.round(n));
+}
+
+export default async function CookPage({ params, searchParams }: CookPageProps) {
   const { slug } = await params;
-  return <CookScreen slug={slug} baked={getRecipe(slug) ?? null} />;
+  const { serves } = await searchParams;
+  return (
+    <CookScreen
+      slug={slug}
+      baked={getRecipe(slug) ?? null}
+      serves={parseServesParam(serves)}
+    />
+  );
 }

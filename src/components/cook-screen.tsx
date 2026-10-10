@@ -10,9 +10,11 @@ import type { Recipe } from "@/lib/recipes";
 export function CookScreen({
   slug,
   baked,
+  serves = null,
 }: {
   slug: string;
   baked: Recipe | null;
+  serves?: number | null;
 }) {
   const stored = useKeptRecipe(slug);
   const recipe = stored ?? baked ?? null;
@@ -39,7 +41,7 @@ export function CookScreen({
     <div className="flex min-h-full flex-col">
       <SiteHeader current="recipe" />
       <PageShell wide>
-        <CookMode recipe={recipe} />
+        <CookMode recipe={recipe} serves={serves} />
       </PageShell>
     </div>
   );
