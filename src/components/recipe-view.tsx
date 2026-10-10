@@ -2,11 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChefHat, Heart, Pencil, Share2, ShoppingBasket } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChefHat, Heart, Pencil, Share2, ShoppingBasket, Trash2 } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { fieldClass, fieldCompactClass } from "@/design-system";
 import { addIngredientsToGrocery } from "@/lib/grocery-store";
-import { addCookEvent, saveKeptRecipe } from "@/lib/kept-store";
+import {
+  addCookEvent,
+  removeRecipeFromCatalog,
+  saveKeptRecipe,
+} from "@/lib/kept-store";
+import { removeRecipeFromPlan } from "@/lib/plan-store";
 import {
   kitchenHref,
   mergeRecipeLists,
@@ -14,17 +20,20 @@ import {
   type Recipe,
 } from "@/lib/recipes";
 import { parseServes, scaleAmount } from "@/lib/scale";
-import { useKeptRecipes } from "@/lib/use-kept-recipes";
+import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
 
 export function RecipeCook({ recipe }: { recipe: Recipe }) {
+  const router = useRouter();
   const kept = useKeptRecipes();
-  const catalog = mergeRecipeLists(kept, seedRecipes);
+  const removed = useRemovedSlugs();
+  const catalog = mergeRecipeLists(kept, seedRecipes, removed);
   const live = catalog.find((item) => item.slug === recipe.slug) ?? recipe;
   const baseServes = parseServes(live.servings);
   const [serves, setServes] = useState(baseServes);
   const [copied, setCopied] = useState(false);
   const [listed, setListed] = useState(false);
   const [logNote, setLogNote] = useState("");
+  const [confirmRemove, setConfirmRemove] = useState(false);
   const factor = serves / baseServes;
   const similar = catalog.filter(
     (item) =>
@@ -39,6 +48,12 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
 
   function toggleFavorite() {
     saveKeptRecipe({ ...live, favorite: !live.favorite });
+  }
+
+  function removeFromCatalog() {
+    removeRecipeFromCatalog(live.slug);
+    removeRecipeFromPlan(live.slug);
+    router.push("/kitchen");
   }
 
   async function share() {
@@ -132,7 +147,46 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
             Open list
           </AppButton>
         ) : null}
+        <AppButton
+          variant="secondary"
+          onClick={() => setConfirmRemove(true)}
+          className="border-destructive/35 text-destructive hover:bg-destructive/10"
+        >
+          <Trash2 className="size-4" />
+          Remove from catalogue
+        </AppButton>
       </div>
+
+      {confirmRemove ? (
+        <div
+          role="alertdialog"
+          aria-labelledby="remove-recipe-title"
+          aria-describedby="remove-recipe-desc"
+          className="mt-4 ds-panel border-destructive/25 p-5"
+        >
+          <h2 id="remove-recipe-title" className="text-xl">
+            Remove this recipe?
+          </h2>
+          <p id="remove-recipe-desc" className="mt-2 text-sm text-muted-foreground">
+            It will leave your catalogue, favorites, and meal plan. Grocery items
+            you already added stay on the list.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <AppButton
+              onClick={removeFromCatalog}
+              className="bg-destructive text-white hover:brightness-95"
+            >
+              Remove recipe
+            </AppButton>
+            <AppButton
+              variant="secondary"
+              onClick={() => setConfirmRemove(false)}
+            >
+              Keep it
+            </AppButton>
+          </div>
+        </div>
+      ) : null}
 
       <section className="mt-8 ds-panel p-5">
         <p className="text-sm font-medium">This recipe serves</p>

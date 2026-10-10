@@ -4,12 +4,15 @@ import { KeepRecipeForm } from "@/components/keep-recipe-form";
 import { PageShell } from "@/components/page-shell";
 import { SiteHeader } from "@/components/site-header";
 import { mergeRecipeLists } from "@/lib/recipes";
-import { useKeptRecipes } from "@/lib/use-kept-recipes";
+import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
 
 export function KeepScreen({ slug }: { slug?: string }) {
   const kept = useKeptRecipes();
+  const removed = useRemovedSlugs();
   const initial = slug
-    ? mergeRecipeLists(kept).find((recipe) => recipe.slug === slug)
+    ? mergeRecipeLists(kept, undefined, removed).find(
+        (recipe) => recipe.slug === slug
+      )
     : undefined;
 
   return (

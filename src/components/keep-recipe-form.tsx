@@ -6,8 +6,13 @@ import { Heart, ImagePlus, Link2, PenLine, Plus, Trash2 } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { areaClass, fieldClass } from "@/design-system";
 import { recipeFromPastedUrl } from "@/lib/demo-from-url";
-import { saveKeptRecipe, slugifyTitle } from "@/lib/kept-store";
+import {
+  removeRecipeFromCatalog,
+  saveKeptRecipe,
+  slugifyTitle,
+} from "@/lib/kept-store";
 import { readMealPhoto } from "@/lib/photo";
+import { removeRecipeFromPlan } from "@/lib/plan-store";
 import { allTags, folders, type Recipe } from "@/lib/recipes";
 
 const emojis = [
@@ -86,6 +91,7 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
     draftsFrom(initial)
   );
   const [steps, setSteps] = useState(initial?.steps.join("\n") ?? "");
+  const [confirmRemove, setConfirmRemove] = useState(false);
 
   function applyRecipe(recipe: Recipe, keepSource?: string) {
     setTitle(recipe.title);
@@ -236,6 +242,15 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
 
     saveKeptRecipe(recipe);
     router.push(`/recipe/${recipe.slug}`);
+  }
+
+  function removeFromCatalog() {
+    if (!initial) {
+      return;
+    }
+    removeRecipeFromCatalog(initial.slug);
+    removeRecipeFromPlan(initial.slug);
+    router.push("/kitchen");
   }
 
   if (!editing && step === "choose") {
@@ -634,9 +649,58 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
         />
       </label>
 
-      <AppButton type="submit" className="min-h-12 px-6 text-base">
-        {editing ? "Save this recipe" : "Keep this recipe"}
-      </AppButton>
+      <div className="flex flex-wrap items-center gap-3">
+        <AppButton type="submit" className="min-h-12 px-6 text-base">
+          {editing ? "Save this recipe" : "Keep this recipe"}
+        </AppButton>
+        {editing ? (
+          <AppButton
+            type="button"
+            variant="secondary"
+            onClick={() => setConfirmRemove(true)}
+            className="border-destructive/35 text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="size-4" />
+            Remove from catalogue
+          </AppButton>
+        ) : null}
+      </div>
+
+      {editing && confirmRemove ? (
+        <div
+          role="alertdialog"
+          aria-labelledby="keep-remove-recipe-title"
+          aria-describedby="keep-remove-recipe-desc"
+          className="ds-panel border-destructive/25 p-5"
+        >
+          <h2 id="keep-remove-recipe-title" className="text-xl">
+            Remove this recipe?
+          </h2>
+          <p
+            id="keep-remove-recipe-desc"
+            className="mt-2 text-sm text-muted-foreground"
+          >
+            It will leave your catalogue, favorites, and meal plan. Grocery items
+            you already added stay on the list.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <AppButton
+              type="button"
+              onClick={removeFromCatalog}
+              className="bg-destructive text-white hover:brightness-95"
+            >
+              Remove recipe
+            </AppButton>
+            <AppButton
+              type="button"
+              variant="secondary"
+              onClick={() => setConfirmRemove(false)}
+            >
+              Keep it
+            </AppButton>
+          </div>
+        </div>
+      ) : null}
         </>
       ) : null}
     </form>
