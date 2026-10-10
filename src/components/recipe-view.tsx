@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Heart, Pencil, Share2, ShoppingBasket } from "lucide-react";
+import { ChefHat, Heart, Pencil, Share2, ShoppingBasket } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { fieldClass, fieldCompactClass } from "@/design-system";
 import { addIngredientsToGrocery } from "@/lib/grocery-store";
@@ -92,6 +92,10 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
       </div>
 
       <div className="mt-5 flex flex-wrap gap-2">
+        <AppButton href={`/recipe/${live.slug}/cook`}>
+          <ChefHat className="size-4" />
+          Make this recipe
+        </AppButton>
         <AppButton onClick={toggleFavorite} variant={live.favorite ? "primary" : "secondary"}>
           <Heart className={live.favorite ? "size-4 fill-current" : "size-4"} />
           {live.favorite ? "Favorited" : "Favorite"}

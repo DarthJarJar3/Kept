@@ -57,7 +57,8 @@ These are the core of the app. The Spoonful name in the navbar is the home butto
 | **Recipes** | `/kitchen` | The catalogue. Find a saved recipe and open it. |
 | **Add recipe** | `/keep` | Paste a link, or write the version you already make. |
 | **Plan ahead** | `/plan` | Pick a range of days and how many people, then see how much of each ingredient the recipes in that range need. |
-| **Cook-through** | `/recipe/...` | The recipe you selected. The aim is checkboxes for ingredients and steps, plus a progress bar. |
+| **Recipe** | `/recipe/...` | The recipe you selected: notes, scaled ingredients, and the full step list. |
+| **Cook mode** | `/recipe/.../cook` | Make the recipe one step at a time. Progress bar, back/next, ingredients stay visible. |
 
 The first IS551 prototype proved a smaller slice of this: a landing screen, My Kitchen, and one kept recipe. That write-up, including the design questions and the before-and-after of the landing page, is in [OLD_3SCREENS_README.MD](./OLD_3SCREENS_README.MD).
 
@@ -67,7 +68,8 @@ The first IS551 prototype proved a smaller slice of this: a landing screen, My K
 
 - **Home** states the keep-and-find idea and links into Recipes and Add recipe.
 - **Recipes** finds by folder, tag, favorite, name, or ingredient. Folders and tags stay in two separate groups. Opening a card goes to that recipe.
-- **Recipe** shows your version: notes in one region, and changed amounts next to what the source called for. You can send it to Plan. Checkboxes and a progress bar are still ahead of this screen.
+- **Recipe** shows your version: notes in one region, and changed amounts next to what the source called for. You can send it to Plan, or open **Make this recipe** for cook mode.
+- **Cook mode** (`/recipe/.../cook`) walks one step at a time with a progress bar. The full ingredients list stays on screen.
 - **Add recipe** lets you type a recipe, including a meal photo, or paste a link. Pasting a link fills a sample recipe so the flow is visible. It does not yet read the page, and it does not yet accept a raw paste of recipe text.
 - **Plan ahead** is the current week. You set the first and last day, set how many people you are cooking for, and place recipes on meals. The ingredient list covers only the days in that range and scales each recipe from the servings written on it. A meal that is only a short note, like yoghurt, stays off the list.
 - **Profile** (`/profile`) is in the navbar. It holds your name, the kitchen color, and is where further settings will live.
