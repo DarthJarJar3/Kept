@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useActionFeedback } from "@/components/action-feedback";
 import { AppButton } from "@/components/app-button";
+import { ConfirmPanel } from "@/components/confirm-panel";
 import { fieldClass, fieldCompactClass, fieldGrowClass } from "@/design-system";
 import {
   MEAL_SLOTS,
@@ -320,8 +322,13 @@ export function PlanBoard({ addSlug }: { addSlug?: string }) {
                   slot="dessert"
                   entries={plan[day].dessert}
                   recipes={recipes}
-                  onClearSlot={() => clearDessert(day)}
+                  onClearSlot={() => {
+                    clearDessert(day);
+                  }}
                   clearLabel="Remove dessert"
+                  clearTitle="Remove dessert?"
+                  clearDescription={`Close dessert for ${day} and clear anything listed there.`}
+                  clearConfirmLabel="Remove dessert"
                 />
               ) : (
                 <div className="mt-4">
@@ -349,6 +356,9 @@ function MealSlotEditor({
   recipes,
   onClearSlot,
   clearLabel,
+  clearTitle,
+  clearDescription,
+  clearConfirmLabel,
 }: {
   day: PlanDay;
   slot: MealSlot;
@@ -356,8 +366,13 @@ function MealSlotEditor({
   recipes: Recipe[];
   onClearSlot?: () => void;
   clearLabel?: string;
+  clearTitle?: string;
+  clearDescription?: string;
+  clearConfirmLabel?: string;
 }) {
+  const { notify } = useActionFeedback();
   const [draft, setDraft] = useState("");
+  const [confirmClear, setConfirmClear] = useState(false);
 
   function addNote() {
     addPlanNote(day, slot, draft);
@@ -368,17 +383,40 @@ function MealSlotEditor({
     <section className="mt-4 border-t border-border pt-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="font-heading text-lg">{SLOT_LABELS[slot]}</h3>
-        {onClearSlot && clearLabel ? (
+        {onClearSlot && clearLabel && !confirmClear ? (
           <AppButton
             type="button"
             variant="secondary"
-            onClick={onClearSlot}
+            onClick={() => setConfirmClear(true)}
             aria-label={`${clearLabel} for ${day}`}
+            className="border-destructive/35 text-destructive hover:bg-destructive/10"
           >
             {clearLabel}
           </AppButton>
         ) : null}
       </div>
+      {confirmClear && onClearSlot ? (
+        <ConfirmPanel
+          className="mt-3"
+          title={clearTitle ?? `${clearLabel}?`}
+          description={
+            clearDescription ??
+            "This clears the slot. You can add it again later."
+          }
+          confirmLabel={clearConfirmLabel ?? clearLabel ?? "Remove"}
+          cancelLabel="Keep it"
+          onConfirm={() => {
+            onClearSlot();
+            setConfirmClear(false);
+            notify(
+              slot === "dessert"
+                ? `Dessert removed for ${day}.`
+                : `Cleared ${SLOT_LABELS[slot]} for ${day}.`
+            );
+          }}
+          onCancel={() => setConfirmClear(false)}
+        />
+      ) : null}
       {entries.length === 0 ? (
         <p className="mt-2 text-sm text-muted-foreground">Nothing here yet.</p>
       ) : (
@@ -427,6 +465,36 @@ function MealRow({
   entry: MealEntry;
   recipes: Recipe[];
 }) {
+  const { notify } = useActionFeedback();
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const recipe =
+    entry.kind === "recipe"
+      ? recipes.find((item) => item.slug === entry.slug)
+      : undefined;
+  const label =
+    entry.kind === "note"
+      ? entry.text
+      : (recipe?.title ?? "Removed from catalogue");
+
+  if (confirmRemove) {
+    return (
+      <li>
+        <ConfirmPanel
+          title="Remove from plan?"
+          description={`Take “${label}” off ${SLOT_LABELS[slot]} for ${day}.`}
+          confirmLabel="Remove"
+          cancelLabel="Keep it"
+          onConfirm={() => {
+            removePlanEntry(day, slot, entry.id);
+            setConfirmRemove(false);
+            notify(`Removed from ${SLOT_LABELS[slot]} · ${day}.`);
+          }}
+          onCancel={() => setConfirmRemove(false)}
+        />
+      </li>
+    );
+  }
+
   if (entry.kind === "note") {
     return (
       <li className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border px-3 py-2">
@@ -434,7 +502,8 @@ function MealRow({
         <AppButton
           type="button"
           variant="secondary"
-          onClick={() => removePlanEntry(day, slot, entry.id)}
+          onClick={() => setConfirmRemove(true)}
+          className="border-destructive/35 text-destructive hover:bg-destructive/10"
         >
           Remove
         </AppButton>
@@ -442,7 +511,6 @@ function MealRow({
     );
   }
 
-  const recipe = recipes.find((item) => item.slug === entry.slug);
   return (
     <li className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-secondary/40 px-3 py-2">
       <p>
@@ -456,7 +524,8 @@ function MealRow({
         <AppButton
           type="button"
           variant="secondary"
-          onClick={() => removePlanEntry(day, slot, entry.id)}
+          onClick={() => setConfirmRemove(true)}
+          className="border-destructive/35 text-destructive hover:bg-destructive/10"
         >
           Remove
         </AppButton>

@@ -4,7 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChefHat, Heart, Pencil, Share2, ShoppingBasket, Trash2 } from "lucide-react";
+import { useActionFeedback } from "@/components/action-feedback";
 import { AppButton } from "@/components/app-button";
+import { ConfirmPanel } from "@/components/confirm-panel";
 import { fieldClass, fieldCompactClass } from "@/design-system";
 import { addIngredientsToGrocery } from "@/lib/grocery-store";
 import {
@@ -24,6 +26,7 @@ import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
 
 export function RecipeCook({ recipe }: { recipe: Recipe }) {
   const router = useRouter();
+  const { notify } = useActionFeedback();
   const kept = useKeptRecipes();
   const removed = useRemovedSlugs();
   const catalog = mergeRecipeLists(kept, seedRecipes, removed);
@@ -53,6 +56,7 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
   function removeFromCatalog() {
     removeRecipeFromCatalog(live.slug);
     removeRecipeFromPlan(live.slug);
+    notify(`Removed “${live.title}” from your catalogue.`);
     router.push("/kitchen");
   }
 
@@ -158,34 +162,15 @@ export function RecipeCook({ recipe }: { recipe: Recipe }) {
       </div>
 
       {confirmRemove ? (
-        <div
-          role="alertdialog"
-          aria-labelledby="remove-recipe-title"
-          aria-describedby="remove-recipe-desc"
-          className="mt-4 ds-panel border-destructive/25 p-5"
-        >
-          <h2 id="remove-recipe-title" className="text-xl">
-            Remove this recipe?
-          </h2>
-          <p id="remove-recipe-desc" className="mt-2 text-sm text-muted-foreground">
-            It will leave your catalogue, favorites, and meal plan. Grocery items
-            you already added stay on the list.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <AppButton
-              onClick={removeFromCatalog}
-              className="bg-destructive text-white hover:brightness-95"
-            >
-              Remove recipe
-            </AppButton>
-            <AppButton
-              variant="secondary"
-              onClick={() => setConfirmRemove(false)}
-            >
-              Keep it
-            </AppButton>
-          </div>
-        </div>
+        <ConfirmPanel
+          className="mt-4"
+          title="Remove this recipe?"
+          description="It will leave your catalogue, favorites, and meal plan. Grocery items you already added stay on the list."
+          confirmLabel="Remove recipe"
+          cancelLabel="Keep it"
+          onConfirm={removeFromCatalog}
+          onCancel={() => setConfirmRemove(false)}
+        />
       ) : null}
 
       <section className="mt-8 ds-panel p-5">
