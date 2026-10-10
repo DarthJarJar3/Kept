@@ -12,12 +12,13 @@ import {
   type Ingredient,
   type Recipe,
 } from "@/lib/recipes";
-import { useKeptRecipes } from "@/lib/use-kept-recipes";
+import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
 
 export function PantryBoard() {
   const pantry = usePantry();
   const kept = useKeptRecipes();
-  const recipes = mergeRecipeLists(kept, seedRecipes);
+  const removed = useRemovedSlugs();
+  const recipes = mergeRecipeLists(kept, seedRecipes, removed);
   const [draft, setDraft] = useState("");
   const [scanned, setScanned] = useState(false);
   const [added, setAdded] = useState("");

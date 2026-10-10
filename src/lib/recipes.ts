@@ -395,9 +395,19 @@ export function getFolderCount(folder: string) {
   return recipes.filter((recipe) => recipe.folder === folder).length;
 }
 
-export function mergeRecipeLists(kept: Recipe[], seed: Recipe[] = recipes) {
+export function mergeRecipeLists(
+  kept: Recipe[],
+  seed: Recipe[] = recipes,
+  removedSlugs: Iterable<string> = []
+) {
   const keptSlugs = new Set(kept.map((recipe) => recipe.slug));
-  return [...kept, ...seed.filter((recipe) => !keptSlugs.has(recipe.slug))];
+  const removed = new Set(removedSlugs);
+  return [
+    ...kept.filter((recipe) => !removed.has(recipe.slug)),
+    ...seed.filter(
+      (recipe) => !keptSlugs.has(recipe.slug) && !removed.has(recipe.slug)
+    ),
+  ];
 }
 
 export function filterRecipes({

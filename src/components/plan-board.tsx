@@ -23,7 +23,7 @@ import {
   type Recipe,
 } from "@/lib/recipes";
 import { formatMeasure, measureOf, parseServes } from "@/lib/scale";
-import { useKeptRecipes } from "@/lib/use-kept-recipes";
+import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
 
 const PEOPLE_KEY = "kept-prototype-plan-people";
 const FROM_KEY = "kept-prototype-plan-from";
@@ -125,7 +125,8 @@ function ingredientNeeds(
 export function PlanBoard({ addSlug }: { addSlug?: string }) {
   const plan = useWeekPlan();
   const kept = useKeptRecipes();
-  const recipes = mergeRecipeLists(kept, seedRecipes);
+  const removed = useRemovedSlugs();
+  const recipes = mergeRecipeLists(kept, seedRecipes, removed);
   const pending = addSlug
     ? recipes.find((recipe) => recipe.slug === addSlug)
     : undefined;
@@ -427,10 +428,12 @@ function MealRow({
     <li className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border bg-secondary/40 px-3 py-2">
       <p>
         <span className="mr-2">{recipe?.emoji ?? "🍽️"}</span>
-        {recipe?.title ?? "A kept recipe"}
+        {recipe?.title ?? "Removed from catalogue"}
       </p>
       <div className="flex flex-wrap gap-2">
-        <AppButton href={`/recipe/${entry.slug}`}>Open</AppButton>
+        {recipe ? (
+          <AppButton href={`/recipe/${entry.slug}`}>Open</AppButton>
+        ) : null}
         <AppButton
           type="button"
           variant="secondary"

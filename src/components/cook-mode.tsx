@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check, ChefHat } from "lucide-react";
 import { AppButton } from "@/components/app-button";
-import { useKeptRecipes } from "@/lib/use-kept-recipes";
+import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
 import {
   mergeRecipeLists,
   recipes as seedRecipes,
@@ -30,7 +30,8 @@ export function CookMode({
   serves?: number | null;
 }) {
   const kept = useKeptRecipes();
-  const catalog = mergeRecipeLists(kept, seedRecipes);
+  const removed = useRemovedSlugs();
+  const catalog = mergeRecipeLists(kept, seedRecipes, removed);
   const live = catalog.find((item) => item.slug === recipe.slug) ?? recipe;
   const baseServes = parseServes(live.servings);
   const serves = resolveServes(servesProp, baseServes);

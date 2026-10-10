@@ -202,6 +202,47 @@ export function removePlanEntry(day: PlanDay, slot: MealSlot, id: string) {
   }));
 }
 
+export function removeRecipeFromPlan(slug: string) {
+  const plan = readWeekPlan();
+  let changed = false;
+  const next = emptyPlan();
+
+  for (const day of PLAN_DAYS) {
+    const current = plan[day];
+    const breakfast = current.breakfast.filter(
+      (entry) => !(entry.kind === "recipe" && entry.slug === slug)
+    );
+    const lunch = current.lunch.filter(
+      (entry) => !(entry.kind === "recipe" && entry.slug === slug)
+    );
+    const dinner = current.dinner.filter(
+      (entry) => !(entry.kind === "recipe" && entry.slug === slug)
+    );
+    const dessert = current.dessert.filter(
+      (entry) => !(entry.kind === "recipe" && entry.slug === slug)
+    );
+    if (
+      breakfast.length !== current.breakfast.length ||
+      lunch.length !== current.lunch.length ||
+      dinner.length !== current.dinner.length ||
+      dessert.length !== current.dessert.length
+    ) {
+      changed = true;
+    }
+    next[day] = {
+      breakfast,
+      lunch,
+      dinner,
+      dessert,
+      dessertOpen: current.dessertOpen && dessert.length > 0,
+    };
+  }
+
+  if (changed) {
+    saveWeekPlan(next);
+  }
+}
+
 export function openDessert(day: PlanDay) {
   updateDay(day, (current) => ({ ...current, dessertOpen: true }));
 }

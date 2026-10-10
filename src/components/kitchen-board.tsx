@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Heart, Plus, Search } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { chipClass, chipMutedClass, fieldIconClass } from "@/design-system";
-import { useKeptRecipes } from "@/lib/use-kept-recipes";
+import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
 import {
   allTags as seedTags,
   filterRecipes,
@@ -30,7 +30,8 @@ export function KitchenBoard({
   favorite = false,
 }: KitchenBoardProps) {
   const kept = useKeptRecipes();
-  const recipes = mergeRecipeLists(kept, seedRecipes);
+  const removed = useRemovedSlugs();
+  const recipes = mergeRecipeLists(kept, seedRecipes, removed);
   const tags = Array.from(
     new Set([...seedTags, ...kept.flatMap((recipe) => recipe.tags), "favorites"])
   ).sort();
