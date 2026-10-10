@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { ActionFeedbackProvider } from "@/components/action-feedback";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
@@ -26,7 +27,9 @@ export default function RootLayout({
       className={`${jakarta.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <ActionFeedbackProvider>{children}</ActionFeedbackProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

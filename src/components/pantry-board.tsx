@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useActionFeedback } from "@/components/action-feedback";
 import { AppButton } from "@/components/app-button";
+import { ConfirmPanel } from "@/components/confirm-panel";
 import { fieldGrowClass } from "@/design-system";
 import { addIngredientsToGrocery } from "@/lib/grocery-store";
 import { ingredientCovered } from "@/lib/pantry-match";
@@ -15,6 +17,7 @@ import {
 import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
 
 export function PantryBoard() {
+  const { notify } = useActionFeedback();
   const pantry = usePantry();
   const kept = useKeptRecipes();
   const removed = useRemovedSlugs();
@@ -22,6 +25,8 @@ export function PantryBoard() {
   const [draft, setDraft] = useState("");
   const [scanned, setScanned] = useState(false);
   const [added, setAdded] = useState("");
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
+  const pendingRemove = pantry.find((item) => item.id === pendingRemoveId);
   const names = pantry.map((item) => item.name);
   const matches = recipes
     .map((recipe) => {
@@ -85,8 +90,13 @@ export function PantryBoard() {
                 <AppButton
                   type="button"
                   variant="secondary"
-                  onClick={() => removePantryItem(item.id)}
+                  onClick={() => setPendingRemoveId(item.id)}
                   aria-label={`Remove ${item.name}`}
+                  className={
+                    pendingRemoveId === item.id
+                      ? "border-destructive/35 text-destructive"
+                      : undefined
+                  }
                 >
                   {item.name}
                   <span aria-hidden="true">×</span>
@@ -95,9 +105,25 @@ export function PantryBoard() {
             ))}
           </ul>
         )}
-        <p className="mt-3 text-sm text-muted-foreground">
-          Tap an ingredient to take it off the list.
-        </p>
+        {pendingRemove ? (
+          <ConfirmPanel
+            className="mt-4"
+            title={`Remove ${pendingRemove.name}?`}
+            description="Take it off the pantry list. You can add it again anytime."
+            confirmLabel="Remove"
+            cancelLabel="Keep it"
+            onConfirm={() => {
+              removePantryItem(pendingRemove.id);
+              setPendingRemoveId(null);
+              notify(`Removed ${pendingRemove.name} from pantry.`);
+            }}
+            onCancel={() => setPendingRemoveId(null)}
+          />
+        ) : (
+          <p className="mt-3 text-sm text-muted-foreground">
+            Tap an ingredient to take it off the list.
+          </p>
+        )}
       </section>
 
       <div>

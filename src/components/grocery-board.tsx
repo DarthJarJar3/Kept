@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useActionFeedback } from "@/components/action-feedback";
 import { AppButton } from "@/components/app-button";
+import { ConfirmPanel } from "@/components/confirm-panel";
 import { areaMutedClass } from "@/design-system";
 import {
   AISLES,
@@ -15,9 +17,12 @@ import {
 } from "@/lib/grocery-store";
 
 export function GroceryBoard() {
+  const { notify } = useActionFeedback();
   const items = useGrocery();
   const [copied, setCopied] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
   const needed = items.filter((item) => !item.checked).length;
+  const checkedCount = items.filter((item) => item.checked).length;
   const listText = groceryAsText(items);
 
   async function copyList() {
@@ -50,13 +55,35 @@ export function GroceryBoard() {
           <AppButton type="button" onClick={copyList}>
             {copied ? "Copied" : "Copy list"}
           </AppButton>
-          {items.some((item) => item.checked) ? (
-            <AppButton type="button" variant="secondary" onClick={clearCheckedGrocery}>
+          {checkedCount > 0 && !confirmClear ? (
+            <AppButton
+              type="button"
+              variant="secondary"
+              onClick={() => setConfirmClear(true)}
+              className="border-destructive/35 text-destructive hover:bg-destructive/10"
+            >
               Clear checked
             </AppButton>
           ) : null}
         </div>
       </div>
+
+      {confirmClear ? (
+        <ConfirmPanel
+          title="Clear checked items?"
+          description={`Remove ${checkedCount} checked ${
+            checkedCount === 1 ? "item" : "items"
+          } from the grocery list. Unchecked items stay.`}
+          confirmLabel="Clear checked"
+          cancelLabel="Keep them"
+          onConfirm={() => {
+            clearCheckedGrocery();
+            setConfirmClear(false);
+            notify("Cleared checked grocery items.");
+          }}
+          onCancel={() => setConfirmClear(false)}
+        />
+      ) : null}
 
       {items.length > 0 ? (
         <section className="ds-panel p-4">

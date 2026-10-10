@@ -3,7 +3,9 @@
 import { type FormEvent, type ReactNode, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, ImagePlus, Link2, PenLine, Plus, Trash2 } from "lucide-react";
+import { useActionFeedback } from "@/components/action-feedback";
 import { AppButton } from "@/components/app-button";
+import { ConfirmPanel } from "@/components/confirm-panel";
 import { areaClass, fieldClass } from "@/design-system";
 import { recipeFromPastedUrl } from "@/lib/demo-from-url";
 import {
@@ -64,6 +66,7 @@ function draftsFrom(recipe?: Recipe): IngredientDraft[] {
 
 export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
   const router = useRouter();
+  const { notify } = useActionFeedback();
   const photoInputId = useId();
   const photoInputRef = useRef<HTMLInputElement>(null);
   const editing = Boolean(initial);
@@ -241,6 +244,11 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
     };
 
     saveKeptRecipe(recipe);
+    notify(
+      editing
+        ? `Saved “${recipe.title}”.`
+        : `Kept “${recipe.title}” in your catalogue.`
+    );
     router.push(`/recipe/${recipe.slug}`);
   }
 
@@ -250,6 +258,7 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
     }
     removeRecipeFromCatalog(initial.slug);
     removeRecipeFromPlan(initial.slug);
+    notify(`Removed “${initial.title}” from your catalogue.`);
     router.push("/kitchen");
   }
 
@@ -667,39 +676,14 @@ export function KeepRecipeForm({ initial }: { initial?: Recipe }) {
       </div>
 
       {editing && confirmRemove ? (
-        <div
-          role="alertdialog"
-          aria-labelledby="keep-remove-recipe-title"
-          aria-describedby="keep-remove-recipe-desc"
-          className="ds-panel border-destructive/25 p-5"
-        >
-          <h2 id="keep-remove-recipe-title" className="text-xl">
-            Remove this recipe?
-          </h2>
-          <p
-            id="keep-remove-recipe-desc"
-            className="mt-2 text-sm text-muted-foreground"
-          >
-            It will leave your catalogue, favorites, and meal plan. Grocery items
-            you already added stay on the list.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <AppButton
-              type="button"
-              onClick={removeFromCatalog}
-              className="bg-destructive text-white hover:brightness-95"
-            >
-              Remove recipe
-            </AppButton>
-            <AppButton
-              type="button"
-              variant="secondary"
-              onClick={() => setConfirmRemove(false)}
-            >
-              Keep it
-            </AppButton>
-          </div>
-        </div>
+        <ConfirmPanel
+          title="Remove this recipe?"
+          description="It will leave your catalogue, favorites, and meal plan. Grocery items you already added stay on the list."
+          confirmLabel="Remove recipe"
+          cancelLabel="Keep it"
+          onConfirm={removeFromCatalog}
+          onCancel={() => setConfirmRemove(false)}
+        />
       ) : null}
         </>
       ) : null}
