@@ -1,8 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useId, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { Heart, Plus, Search } from "lucide-react";
+import { ChevronDown, Heart, Plus, Search } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { chipClass, chipMutedClass, fieldIconClass } from "@/design-system";
 import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
@@ -49,36 +49,36 @@ export function KitchenBoard({
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Recipes</h1>
-          <p className="mt-2 max-w-xl text-muted-foreground">
-            Your catalogue. Find a recipe you already made work — by folder, tag,
-            favorite, name, or an ingredient — then open it to cook.
-          </p>
-        </div>
-        <AppButton href="/keep" className="w-full sm:w-auto">
+      <div>
+        <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Recipes</h1>
+        <p className="mt-2 max-w-xl text-muted-foreground">
+          Your catalogue. Find a recipe you already made work — by folder, tag,
+          favorite, name, or an ingredient — then open it to cook.
+        </p>
+      </div>
+
+      <div className="flex max-w-xl flex-col gap-3">
+        <form action="/kitchen" method="get" className="relative">
+          {folder ? <input type="hidden" name="folder" value={folder} /> : null}
+          {tag ? <input type="hidden" name="tag" value={tag} /> : null}
+          {favorite ? <input type="hidden" name="favorite" value="1" /> : null}
+          <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            name="q"
+            defaultValue={query}
+            placeholder="Search names, tags, or ingredients"
+            aria-label="Search your recipes"
+            className={fieldIconClass}
+          />
+          <AppButton type="submit" className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3">
+            Find
+          </AppButton>
+        </form>
+        <AppButton href="/keep" className="w-full sm:w-auto sm:self-start">
           <Plus className="size-4" />
           Add a recipe
         </AppButton>
       </div>
-
-      <form action="/kitchen" method="get" className="relative max-w-xl">
-        {folder ? <input type="hidden" name="folder" value={folder} /> : null}
-        {tag ? <input type="hidden" name="tag" value={tag} /> : null}
-        {favorite ? <input type="hidden" name="favorite" value="1" /> : null}
-        <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
-        <input
-          name="q"
-          defaultValue={query}
-          placeholder="Search names, tags, or ingredients"
-          aria-label="Search your recipes"
-          className={fieldIconClass}
-        />
-        <AppButton type="submit" className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3">
-          Find
-        </AppButton>
-      </form>
 
       <p className="text-sm text-muted-foreground" aria-live="polite">
         Showing {visible.length} of {recipes.length}
@@ -88,81 +88,85 @@ export function KitchenBoard({
         {query.trim() ? ` matching “${query.trim()}”` : ""}
       </p>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <FilterGroup
-          title="Folders"
-          hint="One place you would look"
-          legend="Filter by folder"
-        >
-          {folders.map((item) => (
-            <FilterChip
-              key={item}
-              href={kitchenHref({
-                folder: folder === item ? undefined : item,
-                tag,
-                query,
-                favorite,
-              })}
-              label={`${item} (${folderCount(item)})`}
-              kind="folder"
-              active={folder === item}
-            />
-          ))}
-        </FilterGroup>
-        <FilterGroup
-          title="Tags"
-          hint="Find the same recipe another way"
-          legend="Filter by tag"
-        >
-          <FilterChip
-            href={kitchenHref({
-              folder,
-              tag,
-              query,
-              favorite: !favorite,
-            })}
-            label={`Favorites (${recipes.filter((recipe) => recipe.favorite).length})`}
-            kind="tag"
-            active={favorite}
-          />
-          {tags
-            .filter((item) => item !== "favorites")
-            .map((item) => (
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] lg:items-start">
+        <aside className="order-1 space-y-4 lg:order-2">
+          <FilterGroup
+            title="Folders"
+            hint="One place you would look"
+            legend="Filter by folder"
+          >
+            {folders.map((item) => (
               <FilterChip
                 key={item}
                 href={kitchenHref({
-                  folder,
-                  tag: tag === item ? undefined : item,
+                  folder: folder === item ? undefined : item,
+                  tag,
                   query,
                   favorite,
                 })}
-                label={item}
-                kind="tag"
-                active={tag === item}
+                label={`${item} (${folderCount(item)})`}
+                kind="folder"
+                active={folder === item}
               />
             ))}
-        </FilterGroup>
-      </div>
+          </FilterGroup>
+          <FilterGroup
+            title="Tags"
+            hint="Find the same recipe another way"
+            legend="Filter by tag"
+          >
+            <FilterChip
+              href={kitchenHref({
+                folder,
+                tag,
+                query,
+                favorite: !favorite,
+              })}
+              label={`Favorites (${recipes.filter((recipe) => recipe.favorite).length})`}
+              kind="tag"
+              active={favorite}
+            />
+            {tags
+              .filter((item) => item !== "favorites")
+              .map((item) => (
+                <FilterChip
+                  key={item}
+                  href={kitchenHref({
+                    folder,
+                    tag: tag === item ? undefined : item,
+                    query,
+                    favorite,
+                  })}
+                  label={item}
+                  kind="tag"
+                  active={tag === item}
+                />
+              ))}
+          </FilterGroup>
+        </aside>
 
-      {visible.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
-          <p className="font-medium">No recipes match that.</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Clear a folder or tag, or try a different name or ingredient.
-          </p>
-          <AppButton href="/kitchen" variant="secondary" className="mt-4">
-            Show everything
-          </AppButton>
+        <div className="order-2 lg:order-1">
+          {visible.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
+              <p className="font-medium">No recipes match that.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Clear a folder or tag, or try a different name or ingredient.
+              </p>
+              <AppButton href="/kitchen" variant="secondary" className="mt-4">
+                Show everything
+              </AppButton>
+            </div>
+          ) : (
+            <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {visible.map((recipe) => (
+                <li key={recipe.slug}>
+                  <RecipeCard recipe={recipe} />
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-      ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {visible.map((recipe) => (
-            <li key={recipe.slug}>
-              <RecipeCard recipe={recipe} />
-            </li>
-          ))}
-        </ul>
-      )}
+      </div>
     </div>
   );
 }
@@ -172,23 +176,44 @@ function FilterGroup({
   hint,
   legend,
   children,
+  defaultOpen = true,
 }: {
   title: string;
   hint: string;
   legend: string;
   children: ReactNode;
+  defaultOpen?: boolean;
 }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const panelId = useId();
+
   return (
-    <div
-      role="group"
-      aria-label={legend}
-      className="ds-panel p-4"
-    >
-      <div className="mb-3">
-        <p className="font-heading text-lg leading-none">{title}</p>
-        <p className="mt-1 text-sm text-muted-foreground">{hint}</p>
+    <div role="group" aria-label={legend} className="ds-panel p-4">
+      <button
+        type="button"
+        className="flex w-full items-start justify-between gap-3 text-left"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen((current) => !current)}
+      >
+        <span>
+          <span className="font-heading text-lg leading-none">{title}</span>
+          <span className="mt-1 block text-sm text-muted-foreground">{hint}</span>
+        </span>
+        <ChevronDown
+          className={`mt-0.5 size-5 shrink-0 text-muted-foreground transition-transform duration-200 ${
+            open ? "rotate-0" : "-rotate-90"
+          }`}
+          aria-hidden
+        />
+      </button>
+      <div
+        id={panelId}
+        hidden={!open}
+        className="mt-3 flex flex-wrap gap-2"
+      >
+        {children}
       </div>
-      <div className="flex flex-wrap gap-2">{children}</div>
     </div>
   );
 }
@@ -244,10 +269,7 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <span className={chipClass}>{recipe.folder}</span>
           {recipe.tags.map((item) => (
-            <span
-              key={item}
-              className={chipMutedClass}
-            >
+            <span key={item} className={chipMutedClass}>
               {item}
             </span>
           ))}
