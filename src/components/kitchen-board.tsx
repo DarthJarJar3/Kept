@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState, type ReactNode } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Heart, Plus, Search } from "lucide-react";
 import { AppButton } from "@/components/app-button";
@@ -49,36 +50,51 @@ export function KitchenBoard({
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Recipes</h1>
-        <p className="mt-2 max-w-xl text-muted-foreground">
-          Your catalogue. Find a recipe you already made work — by folder, tag,
-          favorite, name, or an ingredient — then open it to cook.
-        </p>
-      </div>
-
-      <div className="flex max-w-xl flex-col gap-3">
-        <form action="/kitchen" method="get" className="relative">
-          {folder ? <input type="hidden" name="folder" value={folder} /> : null}
-          {tag ? <input type="hidden" name="tag" value={tag} /> : null}
-          {favorite ? <input type="hidden" name="favorite" value="1" /> : null}
-          <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            name="q"
-            defaultValue={query}
-            placeholder="Search names, tags, or ingredients"
-            aria-label="Search your recipes"
-            className={fieldIconClass}
-          />
-          <AppButton type="submit" className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3">
-            Find
-          </AppButton>
-        </form>
-        <AppButton href="/keep" className="w-full sm:w-auto sm:self-start">
-          <Plus className="size-4" />
-          Add a recipe
-        </AppButton>
-      </div>
+      <section className="kitchen-hero" aria-label="Recipes catalogue">
+        <Image
+          src="/landing-food.jpg"
+          alt=""
+          fill
+          priority
+          sizes="(max-width: 96rem) 100vw, 96rem"
+          className="kitchen-hero-media"
+        />
+        <div className="kitchen-hero-scrim" aria-hidden="true" />
+        <div className="kitchen-hero-content">
+          <h1 className="text-[clamp(1.75rem,3vw+1rem,2.5rem)]">Recipes</h1>
+          <p className="kitchen-hero-lede mt-2">
+            Your catalogue. Find a recipe you already made work — by folder, tag,
+            favorite, name, or an ingredient — then open it to cook.
+          </p>
+          <div className="kitchen-hero-search mt-6 flex w-full max-w-xl flex-col items-center gap-3">
+            <form action="/kitchen" method="get" className="relative w-full">
+              {folder ? <input type="hidden" name="folder" value={folder} /> : null}
+              {tag ? <input type="hidden" name="tag" value={tag} /> : null}
+              {favorite ? (
+                <input type="hidden" name="favorite" value="1" />
+              ) : null}
+              <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                name="q"
+                defaultValue={query}
+                placeholder="Search names, tags, or ingredients"
+                aria-label="Search your recipes"
+                className={fieldIconClass}
+              />
+              <AppButton
+                type="submit"
+                className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3"
+              >
+                Find
+              </AppButton>
+            </form>
+            <AppButton href="/keep" className="w-full sm:w-auto">
+              <Plus className="size-4" />
+              Add a recipe
+            </AppButton>
+          </div>
+        </div>
+      </section>
 
       <p className="text-sm text-muted-foreground" aria-live="polite">
         Showing {visible.length} of {recipes.length}
