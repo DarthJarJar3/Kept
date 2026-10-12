@@ -442,22 +442,31 @@ export function filterRecipes({
   });
 }
 
+/**
+ * Page size for the kitchen recipe grid.
+ * 6 fills two rows on the xl 3-column layout (three rows × two on sm).
+ */
+export const KITCHEN_PAGE_SIZE = 6;
+
 export function kitchenHref({
   folder,
   tag,
   query,
   favorite,
+  page,
 }: {
   folder?: string;
   tag?: string;
   query?: string;
   favorite?: boolean;
+  page?: number;
 }) {
   const params = new URLSearchParams();
   if (folder) params.set("folder", folder);
   if (tag) params.set("tag", tag);
   if (favorite) params.set("favorite", "1");
   if (query?.trim()) params.set("q", query.trim());
+  if (page && page > 1) params.set("page", String(page));
   const search = params.toString();
   return search ? `/kitchen?${search}` : "/kitchen";
 }
