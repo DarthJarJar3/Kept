@@ -49,14 +49,14 @@ export function KitchenBoard({
   }
 
   return (
-    <div className="space-y-8">
+    <>
       <section className="kitchen-hero" aria-label="Recipes catalogue">
         <Image
-          src="/landing-food.jpg"
+          src="/kitchen-food.jpg"
           alt=""
           fill
           priority
-          sizes="(max-width: 96rem) 100vw, 96rem"
+          sizes="100vw"
           className="kitchen-hero-media"
         />
         <div className="kitchen-hero-scrim" aria-hidden="true" />
@@ -66,36 +66,35 @@ export function KitchenBoard({
             Your catalogue. Find a recipe you already made work — by folder, tag,
             favorite, name, or an ingredient — then open it to cook.
           </p>
-          <div className="kitchen-hero-search mt-6 flex w-full max-w-xl flex-col items-center gap-3">
-            <form action="/kitchen" method="get" className="relative w-full">
-              {folder ? <input type="hidden" name="folder" value={folder} /> : null}
-              {tag ? <input type="hidden" name="tag" value={tag} /> : null}
-              {favorite ? (
-                <input type="hidden" name="favorite" value="1" />
-              ) : null}
-              <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
-              <input
-                name="q"
-                defaultValue={query}
-                placeholder="Search names, tags, or ingredients"
-                aria-label="Search your recipes"
-                className={fieldIconClass}
-              />
-              <AppButton
-                type="submit"
-                className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3"
-              >
-                Find
-              </AppButton>
-            </form>
-            <AppButton href="/keep" className="w-full sm:w-auto">
-              <Plus className="size-4" />
-              Add a recipe
+          <form
+            action="/kitchen"
+            method="get"
+            className="kitchen-hero-search relative mt-6 w-full max-w-xl"
+          >
+            {folder ? <input type="hidden" name="folder" value={folder} /> : null}
+            {tag ? <input type="hidden" name="tag" value={tag} /> : null}
+            {favorite ? (
+              <input type="hidden" name="favorite" value="1" />
+            ) : null}
+            <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              name="q"
+              defaultValue={query}
+              placeholder="Search names, tags, or ingredients"
+              aria-label="Search your recipes"
+              className={fieldIconClass}
+            />
+            <AppButton
+              type="submit"
+              className="absolute top-1/2 right-1.5 min-h-9 -translate-y-1/2 px-3"
+            >
+              Find
             </AppButton>
-          </div>
+          </form>
         </div>
       </section>
 
+      <div className="page-shell page-shell-wide space-y-8 py-[clamp(1.25rem,3vw,2.5rem)]">
       <p className="text-sm text-muted-foreground" aria-live="polite">
         Showing {visible.length} of {recipes.length}
         {folder ? ` in ${folder}` : ""}
@@ -106,6 +105,10 @@ export function KitchenBoard({
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] lg:items-start">
         <aside className="order-1 space-y-4 lg:order-2">
+          <AppButton href="/keep" className="w-full">
+            <Plus className="size-4" />
+            Add a recipe
+          </AppButton>
           <FilterGroup
             title="Folders"
             hint="One place you would look"
@@ -183,7 +186,8 @@ export function KitchenBoard({
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
