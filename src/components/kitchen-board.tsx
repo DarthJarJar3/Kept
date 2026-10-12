@@ -1,9 +1,10 @@
 "use client";
 
-import { useId, useState, type ReactNode } from "react";
+import { useEffect, useId, useState, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronDown, Heart, Plus, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronDown, ChevronLeft, ChevronRight, Heart, Plus, Search } from "lucide-react";
 import { AppButton } from "@/components/app-button";
 import { chipClass, chipMutedClass, fieldIconClass } from "@/design-system";
 import { useKeptRecipes, useRemovedSlugs } from "@/lib/use-kept-recipes";
@@ -11,6 +12,7 @@ import {
   allTags as seedTags,
   filterRecipes,
   folders,
+  KITCHEN_PAGE_SIZE,
   kitchenHref,
   mergeRecipeLists,
   recipes as seedRecipes,
@@ -22,6 +24,7 @@ type KitchenBoardProps = {
   tag?: string;
   query?: string;
   favorite?: boolean;
+  page?: number;
 };
 
 export function KitchenBoard({
@@ -29,7 +32,9 @@ export function KitchenBoard({
   tag,
   query = "",
   favorite = false,
+  page: pageProp = 1,
 }: KitchenBoardProps) {
+  const router = useRouter();
   const kept = useKeptRecipes();
   const removed = useRemovedSlugs();
   const recipes = mergeRecipeLists(kept, seedRecipes, removed);
@@ -44,8 +49,52 @@ export function KitchenBoard({
     list: recipes,
   });
 
+  const totalPages = Math.max(1, Math.ceil(visible.length / KITCHEN_PAGE_SIZE));
+  const page = Math.min(Math.max(1, pageProp), totalPages);
+  const pageStart = (page - 1) * KITCHEN_PAGE_SIZE;
+  const pageItems = visible.slice(pageStart, pageStart + KITCHEN_PAGE_SIZE);
+  const rangeStart = visible.length === 0 ? 0 : pageStart + 1;
+  const rangeEnd = pageStart + pageItems.length;
+
+  useEffect(() => {
+    if (pageProp !== page && visible.length > 0) {
+      router.replace(
+        kitchenHref({ folder, tag, query, favorite, page })
+      );
+    }
+  }, [pageProp, page, visible.length, folder, tag, query, favorite, router]);
+
   function folderCount(name: string) {
     return recipes.filter((recipe) => recipe.folder === name).length;
+  }
+
+  function filterSuffix() {
+    return (
+      <>
+        {folder ? ` in ${folder}` : ""}
+        {tag ? ` tagged ${tag}` : ""}
+        {favorite ? " in Favorites" : ""}
+        {query.trim() ? ` matching “${query.trim()}”` : ""}
+      </>
+    );
+  }
+
+  function countLabel() {
+    if (visible.length === 0) return null;
+    if (totalPages === 1 || rangeStart === rangeEnd) {
+      return (
+        <>
+          Showing {rangeEnd} of {visible.length}
+          {filterSuffix()}
+        </>
+      );
+    }
+    return (
+      <>
+        Showing {rangeStart}–{rangeEnd} of {visible.length}
+        {filterSuffix()}
+      </>
+    );
   }
 
   return (
@@ -95,14 +144,6 @@ export function KitchenBoard({
       </section>
 
       <div className="page-shell page-shell-wide space-y-8 py-[clamp(1.25rem,3vw,2.5rem)]">
-      <p className="text-sm text-muted-foreground" aria-live="polite">
-        Showing {visible.length} of {recipes.length}
-        {folder ? ` in ${folder}` : ""}
-        {tag ? ` tagged ${tag}` : ""}
-        {favorite ? " in Favorites" : ""}
-        {query.trim() ? ` matching “${query.trim()}”` : ""}
-      </p>
-
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)] lg:items-start">
         <aside className="order-1 space-y-4 lg:order-2">
           <AppButton href="/keep" className="w-full">
@@ -164,7 +205,7 @@ export function KitchenBoard({
           </FilterGroup>
         </aside>
 
-        <div className="order-2 lg:order-1">
+        <div className="order-2 flex flex-col lg:order-1">
           {visible.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border bg-card px-6 py-12 text-center">
               <p className="font-medium">No recipes match that.</p>
@@ -176,13 +217,85 @@ export function KitchenBoard({
               </AppButton>
             </div>
           ) : (
-            <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {visible.map((recipe) => (
-                <li key={recipe.slug}>
-                  <RecipeCard recipe={recipe} />
-                </li>
-              ))}
-            </ul>
+            <>
+              <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {pageItems.map((recipe) => (
+                  <li key={recipe.slug}>
+                    <RecipeCard recipe={recipe} />
+                  </li>
+                ))}
+              </ul>
+
+              <footer className="kitchen-results-footer mt-8">
+                <p className="text-sm text-muted-foreground" aria-live="polite">
+                  {countLabel()}
+                </p>
+                <nav
+                  className="kitchen-pagination"
+                  aria-label="Recipe results pages"
+                >
+                  {page <= 1 ? (
+                    <AppButton
+                      type="button"
+                      variant="secondary"
+                      className="min-h-10 px-3"
+                      disabled
+                      aria-label="Previous page"
+                    >
+                      <ChevronLeft className="size-4" aria-hidden />
+                      Previous
+                    </AppButton>
+                  ) : (
+                    <AppButton
+                      href={kitchenHref({
+                        folder,
+                        tag,
+                        query,
+                        favorite,
+                        page: page - 1,
+                      })}
+                      variant="secondary"
+                      className="min-h-10 px-3"
+                      aria-label="Previous page"
+                    >
+                      <ChevronLeft className="size-4" aria-hidden />
+                      Previous
+                    </AppButton>
+                  )}
+                  <span className="kitchen-pagination-status text-sm text-muted-foreground">
+                    Page {page} of {totalPages}
+                  </span>
+                  {page >= totalPages ? (
+                    <AppButton
+                      type="button"
+                      variant="secondary"
+                      className="min-h-10 px-3"
+                      disabled
+                      aria-label="Next page"
+                    >
+                      Next
+                      <ChevronRight className="size-4" aria-hidden />
+                    </AppButton>
+                  ) : (
+                    <AppButton
+                      href={kitchenHref({
+                        folder,
+                        tag,
+                        query,
+                        favorite,
+                        page: page + 1,
+                      })}
+                      variant="secondary"
+                      className="min-h-10 px-3"
+                      aria-label="Next page"
+                    >
+                      Next
+                      <ChevronRight className="size-4" aria-hidden />
+                    </AppButton>
+                  )}
+                </nav>
+              </footer>
+            </>
           )}
         </div>
       </div>
