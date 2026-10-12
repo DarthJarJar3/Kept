@@ -292,7 +292,9 @@ html[data-theme="berry"],
   font-weight: 600;
 }
 
-.kitchen-hero {
+.kitchen-hero,
+.keep-hero,
+.plan-hero {
   position: relative;
   display: flex;
   width: 100%;
@@ -304,7 +306,9 @@ html[data-theme="berry"],
   border-radius: 0;
 }
 
-.kitchen-hero-media {
+.kitchen-hero-media,
+.keep-hero-media,
+.plan-hero-media {
   position: absolute;
   inset: 0;
   z-index: 0;
@@ -314,7 +318,13 @@ html[data-theme="berry"],
   height: 100%;
 }
 
-.kitchen-hero-scrim {
+.plan-hero-media {
+  object-position: center 40%;
+}
+
+.kitchen-hero-scrim,
+.keep-hero-scrim,
+.plan-hero-scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
@@ -327,7 +337,9 @@ html[data-theme="berry"],
     );
 }
 
-.kitchen-hero-content {
+.kitchen-hero-content,
+.keep-hero-content,
+.plan-hero-content {
   position: relative;
   z-index: 2;
   display: flex;
@@ -339,12 +351,16 @@ html[data-theme="berry"],
   color: #fff8ec;
 }
 
-.kitchen-hero-content h1 {
+.kitchen-hero-content h1,
+.keep-hero-content h1,
+.plan-hero-content h1 {
   color: #fff8ec;
   text-shadow: 0 8px 28px rgb(42 24 24 / 0.35);
 }
 
-.kitchen-hero-lede {
+.kitchen-hero-lede,
+.keep-hero-lede,
+.plan-hero-lede {
   max-width: 34rem;
   color: color-mix(in srgb, #fff8ec 88%, var(--spoonful-cream));
   text-shadow: 0 4px 18px rgb(42 24 24 / 0.28);
